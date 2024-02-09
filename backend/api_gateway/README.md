@@ -1,7 +1,7 @@
 # CMS-SERVER-API-GATEWAY
 
 ##  TODO LIST:
-1. setup docker-compose with nginx for the project,
-2. make base gateway routing with httpx + tests
-3. add basic redis caching,
-4. setup security with users microservice
+1. make role based auth,
+2. setup login / logout routes,
+3. auto refresh access token cookies when almost expired
+4. manage Flask app configs
