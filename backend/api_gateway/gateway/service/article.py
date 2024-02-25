@@ -13,12 +13,7 @@ class ArticleService:
             raise ConnectionError('Articles service - invalid response code')
         return response.json()
     
-    def process_request(
-            self, 
-            method: str, 
-            path: str, 
-            data: dict[str, Any] | None
-        ) -> tuple[dict[str, Any], int]:
+    def process_request(self, method: str, path: str, data: dict[str, Any]) -> tuple[dict[str, Any], int]:
         response = httpx.request(method.upper(), f'{self.articles_url}/{path}', json=data)
         if str(response.status_code).startswith('5'):
             raise ConnectionError('Articles service - invalid response code')

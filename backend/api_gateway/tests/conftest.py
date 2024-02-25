@@ -1,12 +1,13 @@
-from gateway.app import create_app
-from flask.testing import FlaskClient
+from gateway import create_app
+from gateway.config import TestingConfig
 from flask import Flask
+from flask.testing import FlaskClient
 import pytest
 
 
 @pytest.fixture(scope='function')
 def app() -> Flask:
-    yield create_app()
+    yield create_app(TestingConfig)
 
 
 @pytest.fixture(scope='function')

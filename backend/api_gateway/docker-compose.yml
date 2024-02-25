@@ -13,7 +13,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: gunicorn --bind 0.0.0.0:8000 --workers 4 'gateway.app:create_app()' --reload
+    command: gunicorn --bind 0.0.0.0:8000 --workers 4 'gateway.app:app' --reload
     volumes:
       - ./:/api-gateway
     ports:

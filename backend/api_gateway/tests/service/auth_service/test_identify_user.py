@@ -5,7 +5,7 @@ import pytest
 
 class TestIdentifyUser:
     user_service_path = 'http://users-service-url'
-    auth_service = AuthService({'USERS_URL': user_service_path})
+    auth_service = AuthService(user_service_path)
 
     @patch('httpx.get')
     def test_identify_user_failure(self, mock_get) -> None:
