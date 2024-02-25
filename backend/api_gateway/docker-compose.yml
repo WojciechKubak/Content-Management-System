@@ -23,6 +23,7 @@ services:
         aliases:
           - api-gateway-service
       users-network:
+      articles-network:
 
   nginx-api-gateway:
     image: nginx:latest
@@ -41,4 +42,6 @@ volumes:
 networks:
   api-gateway-network:
   users-network:
+    external: true
+  articles-network:
     external: true
