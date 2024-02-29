@@ -7,8 +7,23 @@ from functools import wraps
 
 
 def requires_roles(roles: list[str]) -> Callable:
+    """
+    Decorator that checks if the user has one of the required roles.
+
+    Args:
+        roles (list[str]): The roles to check.
+
+    Returns:
+        Callable: The decorated function.
+    """
 
     def decorator(fn: Callable) -> Callable:
+        """
+        The decorated function.
+
+        Returns:
+            Response: The response of the request.
+        """
         @wraps(fn)
         def decorated(*args: tuple[Any], **kwargs: dict[str, Any]) -> Response:
             try:
@@ -25,10 +40,22 @@ def requires_roles(roles: list[str]) -> Callable:
 
 
 def requires_no_jwt() -> Callable:
+    """
+    Decorator that checks if the user is not authenticated.
+
+    Returns:
+        Callable: The decorated function.
+    """
 
     def decorator(fn: Callable) -> Callable:
         @wraps(fn)
         def decorated(*args, **kwargs):
+            """
+            The decorated function.
+
+            Returns:
+                Response: The response of the request.
+            """
             try:
                 verify_jwt_in_request()
                 return make_response({'message': 'You are already authenticated'}, 403)

@@ -4,6 +4,7 @@ import os
 load_dotenv()
 
 class Config(object):
+    """Base configuration class. Contains default settings."""
     SECRET_KEY = os.environ.get('SECRET_KEY', 'secret-key')
     
     CACHE_TYPE = 'RedisCache'
@@ -21,18 +22,21 @@ class Config(object):
 
 
 class DevelopmentConfig(Config):
+    """Configuration class for development environment."""
     DEBUG = False
     TESTING = False
     CACHE_REDIS_URL = 'redis://api-gateway-redis:6379/0'
 
 
 class ProductionConfig(Config):
+    """Configuration class for production environment."""
     DEBUG = False
     TESTING = False
     CACHE_REDIS_URL = os.environ.get('CACHE_REDIS_URL', 'example')
 
 
 class TestingConfig(Config):
+    """Configuration class for testing environment."""
     DEBUG = True
     TESTING = True
     CACHE_REDIS_URL = 'redis://api-gateway-redis:6379/0'

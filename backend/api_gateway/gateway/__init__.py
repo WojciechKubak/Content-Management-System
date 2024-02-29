@@ -7,6 +7,15 @@ from flask import Flask, Response, make_response
 
 
 def create_app(config: Config) -> Flask:
+    """
+    Creates and configures the Flask application.
+
+    Args:
+        config (Config): The configuration object to use.
+
+    Returns:
+        Flask: The configured Flask application.
+    """
     app = Flask(__name__)
     app.config.from_object(config)
 

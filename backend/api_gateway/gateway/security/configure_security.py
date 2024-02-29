@@ -13,10 +13,22 @@ from flask_jwt_extended import (
 
 
 def configure_security(app: Flask) -> None:
+    """
+    Configures security for the given Flask app.
+
+    Args:
+        app (Flask): The Flask application to configure.
+    """
 
     @app.post('/login')
     @requires_no_jwt()
     def login() -> Response:
+        """
+        Logs in a user.
+
+        Returns:
+            Response: The response of the request.
+        """
         data = request.get_json()
         username, password = data.get('username'), data.get('password')
 
@@ -37,6 +49,12 @@ def configure_security(app: Flask) -> None:
 
     @app.post('/logout')
     def logout() -> Response:
+        """
+        Logs out a user.
+
+        Returns:
+            Response: The response of the request.
+        """
         response = make_response({'message': "Logout successful"})
         unset_jwt_cookies(response)
         return response
@@ -44,6 +62,12 @@ def configure_security(app: Flask) -> None:
     @app.post('/refresh')
     @jwt_required(refresh=True)
     def refresh() -> Response:
+        """
+        Refreshes a user's access token.
+
+        Returns:
+            Response: The response of the request.
+        """
         identity = get_jwt_identity()
         access_token = create_access_token(identity=identity, fresh=False)
         return make_response({'access_token': access_token})
