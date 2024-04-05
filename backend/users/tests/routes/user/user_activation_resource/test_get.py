@@ -1,5 +1,4 @@
 import pytest
-
 from users.model.user import UserModel
 from flask.testing import Client
 from datetime import datetime

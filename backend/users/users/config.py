@@ -10,7 +10,7 @@ class Config(object):
     TESTING = False
 
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_DATABASE_URI = 'mysql://user:user1234@mysql:3307/db_1'
+    SQLALCHEMY_DATABASE_URI = 'mysql://user:user1234@mysql-users:3308/db_1'
 
 
 class ProductionConfig(Config):
@@ -29,7 +29,7 @@ class TestingConfig(Config):
     TESTING = True
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = 'mysql://user:user1234@localhost:3308/db_test'
+    SQLALCHEMY_DATABASE_URI = 'mysql://user:user1234@localhost:3309/db_test'
 
 
 app_config = {
@@ -38,14 +38,6 @@ app_config = {
         'testing': TestingConfig
     }.get(os.environ.get('APP_CONFIG', '').lower(), Config)
 
-security_config = {
-        'JWT_COOKIE_SECURE': ast.literal_eval(os.environ.get('JWT_COOKIE_SECURE')),
-        'JWT_TOKEN_LOCATION': ast.literal_eval(os.environ.get('JWT_TOKEN_LOCATION')),
-        'JWT_SECRET_KEY': os.environ.get('JWT_SECRET_KEY'),
-        'JWT_ACCESS_TOKEN_EXPIRES': int(os.environ.get('JWT_ACCESS_TOKEN_EXPIRES')),
-        'JWT_REFRESH_TOKEN_EXPIRES': int(os.environ.get('JWT_REFRESH_TOKEN_EXPIRES')),
-        'JWT_COOKIE_CSRF_PROTECT': ast.literal_eval(os.environ.get('JWT_COOKIE_CSRF_PROTECT'))
-    }
 
 mail_config = {
         'MAIL_SERVER': os.environ.get('MAIL_SERVER'),

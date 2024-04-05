@@ -1,6 +1,4 @@
-from users.config import app_config, security_config, mail_config
-from users.security.configure_security import configure_security
-from users.security.configuration import jwt_manager, bcrypt
+from users.config import app_config, mail_config
 from users.db.configuration import sa
 from users.email.configuration import MailConfig
 from users.web.configuration import app
@@ -9,14 +7,15 @@ from users.routes.user import (
     UserNameResource,
     UserListResource,
     UserRegisterResource,
-    UserActivationResource
+    UserActivationResource,
+    UserCredentalsResource
 )
 from users.routes.comment import (
     CommentIdResource,
     CommentResource,
     CommentContentResource,
     CommentUserIdResource,
-    CommentArticleIdResource
+    CommentArticleIdResource,
 )
 from flask import Flask, Response, make_response
 from flask_restful import Api
@@ -49,32 +48,27 @@ def create_app() -> Flask:
         # Initialize SQLAlchemy with the Flask application
         sa.init_app(app)
 
-        # Configure security settings
-        app.config.update(security_config)
-        jwt_manager.init_app(app)
-        configure_security(app)
-        bcrypt.init_app(app)
-
         # Configure email settings
         app.config.update(mail_config)
         templates_env = Environment(loader=PackageLoader('users.email', 'templates'))
         MailConfig.prepare_mail(app, templates_env)
 
-        @app.route('/')
+        @app.route('/health')
         def index() -> Response:
             """Default route handler for the home page."""
             return make_response({'message': 'Users home page'}, 200)
 
         # Create API endpoints for user and comment resources
-        api = Api(app)
-        api.add_resource(UserIdResource, '/users/<int:id_>')
-        api.add_resource(UserNameResource, '/users/<string:username>')
-        api.add_resource(UserListResource, '/users')
-        api.add_resource(UserActivationResource, '/users/activate')
-        api.add_resource(UserRegisterResource, '/users/register')
+        api = Api(app, prefix='/users')
+        api.add_resource(UserIdResource, '/<int:id_>')
+        api.add_resource(UserNameResource, '/<string:username>')
+        api.add_resource(UserListResource, '/')
+        api.add_resource(UserActivationResource, '/activate')
+        api.add_resource(UserRegisterResource, '/register')
+        api.add_resource(UserCredentalsResource, '/credentials')
 
         api.add_resource(CommentIdResource, '/comments/<int:id_>')
-        api.add_resource(CommentResource, '/comments/')
+        api.add_resource(CommentResource, '/comments')
         api.add_resource(CommentContentResource, '/comments/<int:id_>')
         api.add_resource(CommentUserIdResource, '/comments/user/<int:id_>')
         api.add_resource(CommentArticleIdResource, '/comments/article/<int:id_>')

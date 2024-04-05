@@ -53,7 +53,7 @@ class MailConfig:
             None
         """
         timestamp = datetime.utcnow().timestamp() * 1000 + int(os.getenv('REGISTER_TOKEN_LIFESPAN'))
-        activation_url = f'http://localhost/users/activate?id={id_}&timestamp={timestamp}'
+        activation_url = f'http://localhost:81/users/activate?id={id_}&timestamp={timestamp}'
         template = cls.template_env.get_template('activation_mail.html')
         html_body = template.render(activation_url=activation_url)
 

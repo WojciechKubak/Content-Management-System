@@ -1,10 +1,9 @@
 from users.config import app_config
-from users.security.configuration import bcrypt
 from users.db.configuration import sa
-from flask_jwt_extended import create_access_token
+from werkzeug.security import generate_password_hash
 from flask.testing import Client
 from flask import Flask
-from typing import Any, Callable
+from typing import Any
 import pytest
 
 
@@ -34,11 +33,6 @@ def client(app: Flask) -> Client:
         yield client
 
 
-@pytest.fixture
-def access_token(user_model_data: dict[str, Any]) -> Callable[[Any], str]:
-    return create_access_token(identity=user_model_data['id'])
-
-
 @pytest.fixture(scope='session')
 def user_dto() -> dict[str, Any]:
     return {
@@ -63,7 +57,7 @@ def user_model_data(user_dto: dict[str, Any]) -> dict[str, Any]:
         'id': 1,
         'role': 'admin',
         'is_active': False,
-        'password': bcrypt.generate_password_hash(user_dto['password']).decode('utf8')
+        'password': generate_password_hash(user_dto['password'])
     }
 
 

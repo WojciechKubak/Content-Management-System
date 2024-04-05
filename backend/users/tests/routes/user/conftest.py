@@ -3,7 +3,8 @@ from users.routes.user import (
     UserNameResource,
     UserListResource,
     UserRegisterResource,
-    UserActivationResource
+    UserActivationResource,
+    UserCredentalsResource
 )
 from flask_restful import Api
 from flask import Flask
@@ -19,5 +20,6 @@ def app(app: Flask) -> Flask:
     api.add_resource(UserListResource, '/users')
     api.add_resource(UserActivationResource, '/users/activate')
     api.add_resource(UserRegisterResource, '/users/register')
+    api.add_resource(UserCredentalsResource, '/users/credentials')
 
     yield app

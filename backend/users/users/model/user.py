@@ -1,7 +1,7 @@
-from users.security.configuration import bcrypt
+from users.db.configuration import sa
 from sqlalchemy import Integer, String, Boolean, func, Enum
 from sqlalchemy.orm import Mapped, mapped_column
-from users.db.configuration import sa
+from werkzeug.security import generate_password_hash, check_password_hash
 from typing import Literal, get_args
 from datetime import datetime
 from typing import Any, Self
@@ -87,7 +87,7 @@ class UserModel(sa.Model):
         Returns:
             bool: True if the passwords match, False otherwise.
         """
-        return bcrypt.check_password_hash(self.password, password)
+        return check_password_hash(self.password, password)
 
     @classmethod
     def find_by_id(cls, id_: int) -> Self | None:
@@ -139,5 +139,5 @@ class UserModel(sa.Model):
         Returns:
             UserModel: The created UserModel instance.
         """
-        hashed_passowrd = bcrypt.generate_password_hash(data.get('password')).decode('utf8')
+        hashed_passowrd = generate_password_hash(data.get('password'))
         return UserModel(**data | {'password': hashed_passowrd})

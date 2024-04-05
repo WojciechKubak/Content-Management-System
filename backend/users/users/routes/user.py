@@ -1,4 +1,3 @@
-from users.security.token_required import jwt_required_with_roles
 from users.service.configuration import user_service
 from users.forms.user import RegistrationForm
 from flask import Response, make_response, request
@@ -15,7 +14,6 @@ class UserIdResource(Resource):
     parser.add_argument('role', type=str)
     parser.add_argument('is_active', type=bool)
 
-    @jwt_required_with_roles(['admin'])
     def get(self, id_: str) -> Response:
         """
         Get a user by ID.
@@ -32,7 +30,6 @@ class UserIdResource(Resource):
         except ValueError as e:
             return make_response({'message': e.args[0]}, 400)
 
-    @jwt_required_with_roles(['admin'])
     def put(self, id_: str) -> Response:
         """
         Update a user by ID.
@@ -50,7 +47,6 @@ class UserIdResource(Resource):
         except ValueError as e:
             return make_response({'message': e.args[0]}, 400)
 
-    @jwt_required_with_roles(['admin'])
     def delete(self, id_: str) -> Response:
         """
         Delete a user by ID.
@@ -74,7 +70,6 @@ class UserNameResource(Resource):
     parser.add_argument('email', type=str)
     parser.add_argument('password', type=str)
 
-    @jwt_required_with_roles(['user', 'redactor', 'translator', 'admin'])
     def get(self, username: str) -> Response:
         """
         Get a user by username.
@@ -95,7 +90,6 @@ class UserNameResource(Resource):
 class UserListResource(Resource):
     """A Flask-RESTful resource for handling lists of users."""
 
-    @jwt_required_with_roles(['admin'])
     def get(self) -> Response:
         """
         Get a list of all users.
@@ -148,5 +142,25 @@ class UserActivationResource(Resource):
         try:
             user_service.activate_user(request.args.get('id'))
             return make_response({'message': 'User activated'}, 200)
+        except ValueError as e:
+            return make_response({'message': e.args[0]}, 400)
+
+
+class UserCredentalsResource(Resource):
+    """Flask-RESTful resource for validating user credentials."""
+
+
+    def post(self) -> Response:
+        """
+        Validate a user based on login and password parameters.
+
+        Returns:
+            Response: The HTTP response confirming the validation or an error message.
+        """
+        login = request.json.get('username')
+        password = request.json.get('password')
+        try:
+            user = user_service.check_login_credentials(login, password)
+            return make_response(user.to_json(), 200)
         except ValueError as e:
             return make_response({'message': e.args[0]}, 400)

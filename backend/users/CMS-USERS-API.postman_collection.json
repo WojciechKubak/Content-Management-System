@@ -15,15 +15,16 @@
 						{
 							"name": "GET_COMMENT_BY_ID",
 							"request": {
-								"method": "GET",
+								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "localhost:80/comments/1",
+									"raw": "localhost:81/users/comments/1",
 									"host": [
 										"localhost"
 									],
-									"port": "80",
+									"port": "81",
 									"path": [
+										"users",
 										"comments",
 										"1"
 									]
@@ -37,12 +38,13 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "localhost:80/comments/1",
+									"raw": "localhost:81/users/comments/1",
 									"host": [
 										"localhost"
 									],
-									"port": "80",
+									"port": "81",
 									"path": [
+										"users",
 										"comments",
 										"1"
 									]
@@ -70,12 +72,13 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:80/comments",
+									"raw": "localhost:81/users/comments",
 									"host": [
 										"localhost"
 									],
-									"port": "80",
+									"port": "81",
 									"path": [
+										"users",
 										"comments"
 									]
 								}
@@ -181,11 +184,11 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "localhost:80/users/1",
+									"raw": "localhost:81/users/1",
 									"host": [
 										"localhost"
 									],
-									"port": "80",
+									"port": "81",
 									"path": [
 										"users",
 										"1"
@@ -209,11 +212,11 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:80/users/1",
+									"raw": "localhost:81/users/1",
 									"host": [
 										"localhost"
 									],
-									"port": "80",
+									"port": "81",
 									"path": [
 										"users",
 										"1"
@@ -228,13 +231,14 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "localhost:80/users/1",
+									"raw": "localhost:81/users/comments/1",
 									"host": [
 										"localhost"
 									],
-									"port": "80",
+									"port": "81",
 									"path": [
 										"users",
+										"comments",
 										"1"
 									]
 								}
@@ -252,11 +256,11 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "localhost:80/users/User",
+									"raw": "localhost:81/users/User",
 									"host": [
 										"localhost"
 									],
-									"port": "80",
+									"port": "81",
 									"path": [
 										"users",
 										"User"
@@ -276,13 +280,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "localhost:80/users",
+									"raw": "localhost:81/users/",
 									"host": [
 										"localhost"
 									],
-									"port": "80",
+									"port": "81",
 									"path": [
-										"users"
+										"users",
+										""
 									]
 								}
 							},
@@ -300,7 +305,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"username\": \"User\",\r\n    \"password\": \"password\",\r\n    \"email\": \"user@example.com\"\r\n}\r\n",
+									"raw": "{\r\n    \"username\": \"User\",\r\n    \"password\": \"password\",\r\n    \"email\": \"dummy@example.com\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -308,11 +313,11 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:80/users/register",
+									"raw": "localhost:81/users/register",
 									"host": [
 										"localhost"
 									],
-									"port": "80",
+									"port": "81",
 									"path": [
 										"users",
 										"register"
@@ -322,56 +327,39 @@
 							"response": []
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "SECURITY",
-			"item": [
-				{
-					"name": "LOGIN",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"User\",\r\n    \"password\": \"password\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:80/login",
-							"host": [
-								"localhost"
-							],
-							"port": "80",
-							"path": [
-								"login"
-							]
-						}
-					},
-					"response": []
 				},
 				{
-					"name": "LOGOUT",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "localhost:80/logout",
-							"host": [
-								"localhost"
-							],
-							"port": "80",
-							"path": [
-								"logout"
-							]
+					"name": "USER_CREDENTIALS_RESOURCE",
+					"item": [
+						{
+							"name": "GET_CREDENTIALS",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"User\",\r\n    \"password\": \"password\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:81/users/credentials",
+									"host": [
+										"localhost"
+									],
+									"port": "81",
+									"path": [
+										"users",
+										"credentials"
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
 				}
 			]
 		}

@@ -2,11 +2,8 @@ from users.config import mail_config
 from users.email.configuration import MailConfig
 from users.db.configuration import sa
 from users.model.user import UserModel
-from users.security.configure_security import configure_security
-from users.config import security_config
 from jinja2 import PackageLoader, Environment
 from flask.testing import Client
-from flask_jwt_extended import JWTManager
 from flask import Flask
 from typing import Any
 import pytest
@@ -14,12 +11,6 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def app(app: Flask) -> Flask:
-    app.config.update(security_config)
-
-    jwt_manager = JWTManager(app)
-    jwt_manager.init_app(app)
-    configure_security(app)
-
     templates_env = Environment(
         loader=PackageLoader('users.email', 'templates'))
 
@@ -30,8 +21,7 @@ def app(app: Flask) -> Flask:
 
 
 @pytest.fixture(autouse=True)
-def client(client: Client, access_token: str, app: Flask) -> Client:
-    client.set_cookie('access_token_cookie', access_token)
+def client(client: Client, app: Flask) -> Client:
     yield client
 
 
