@@ -22,7 +22,7 @@ class DevelopmentConfig(Config):
     """Development environment configuration."""
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = 'mysql://user:user1234@localhost:3308/db_1'
+    SQLALCHEMY_DATABASE_URI = 'mysql://user:user1234@mysql-users:3308/db_1'
 
 
 class ProductionConfig(Config):

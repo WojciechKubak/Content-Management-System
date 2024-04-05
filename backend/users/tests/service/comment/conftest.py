@@ -1,5 +1,5 @@
 from users.service.comment import CommentService
-from users.db.configuration import sa
+from users.extensions import sa
 from users.model.comment import CommentModel
 from flask import Flask
 from typing import Any

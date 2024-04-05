@@ -1,6 +1,6 @@
 from users.model.user import UserModel
 from users.model.comment import CommentModel
-from users.db.configuration import sa
+from users.extensions import sa
 from flask import Flask
 from typing import Any, Callable
 import pytest

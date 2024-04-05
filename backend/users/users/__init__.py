@@ -1,6 +1,5 @@
-from users.db.configuration import sa
+from users.extensions import sa, mail_config
 from users.config import Config
-from users.email.configuration import MailConfig
 from users.routes.user import (
     UserIdResource,
     UserNameResource,
@@ -18,7 +17,7 @@ from users.routes.comment import (
 )
 from flask import Flask, Response, make_response
 from flask_restful import Api
-from jinja2 import PackageLoader, Environment
+
 
 
 def create_app(config: Config) -> Flask:
@@ -34,10 +33,9 @@ def create_app(config: Config) -> Flask:
     
     app = Flask(__name__)
     app.config.from_object(config)
+    
     sa.init_app(app)
-
-    templates_env = Environment(loader=PackageLoader('users.email', 'templates'))
-    MailConfig.prepare_mail(app, templates_env)
+    mail_config.init_app(app)
 
     api = Api(app, prefix='/users')
     api.add_resource(UserIdResource, '/<int:id_>')
@@ -57,7 +55,7 @@ def create_app(config: Config) -> Flask:
 
         @app.route('/health')
         def index() -> Response:
-            """Default route handler for the home page."""
-            return make_response({'message': 'Users home page'}, 200)
+            """Default route fot health check"""
+            return make_response({'message': f'Users home page'}, 200)
 
         return app

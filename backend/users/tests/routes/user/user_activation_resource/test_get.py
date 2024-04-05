@@ -1,14 +1,14 @@
-import pytest
 from users.model.user import UserModel
+from users.settings import REGISTER_TOKEN_LIFESPAN
 from flask.testing import Client
 from datetime import datetime
 from typing import Any
+import pytest
 import os
 
 
 class TestUserActivationResourceGet:
     resource = '/users/activate'
-    token_lifespan = int(os.getenv('REGISTER_TOKEN_LIFESPAN'))
 
     @pytest.fixture(scope='session')
     def user_model_id(self, user_model_data: dict[str, Any]) -> int:
@@ -16,7 +16,7 @@ class TestUserActivationResourceGet:
 
     def test_when_activation_link_expired(self, client: Client, user_model_id: int) -> None:
         request_data = {
-            'timestamp': datetime.utcnow().timestamp() * 1000 - 1,
+            'timestamp': datetime.now().timestamp() * 1000 - 1,
             'id': user_model_id
         }
         response = client.get(self.resource, query_string=request_data)
@@ -25,7 +25,7 @@ class TestUserActivationResourceGet:
 
     def test_when_user_service_occurs(self, client: Client) -> None:
         request_data = {
-            'timestamp': datetime.utcnow().timestamp() * 1000 + self.token_lifespan,
+            'timestamp': datetime.now().timestamp() * 1000 + REGISTER_TOKEN_LIFESPAN,
             'id': 11111
         }
         response = client.get(self.resource, query_string=request_data)
@@ -33,7 +33,7 @@ class TestUserActivationResourceGet:
 
     def test_when_user_activated_successfully(self, client: Client, user_model_id: int) -> None:
         request_data = {
-            'timestamp': datetime.utcnow().timestamp() * 1000 + self.token_lifespan,
+            'timestamp': datetime.now().timestamp() * 1000 + REGISTER_TOKEN_LIFESPAN,
             'id': user_model_id
         }
         response = client.get(self.resource, query_string=request_data)

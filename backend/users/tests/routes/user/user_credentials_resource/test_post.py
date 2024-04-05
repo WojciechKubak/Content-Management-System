@@ -1,4 +1,4 @@
-from users.db.configuration import sa
+from users.extensions import sa
 from users.model.user import UserModel
 from flask.testing import Client
 from typing import Any

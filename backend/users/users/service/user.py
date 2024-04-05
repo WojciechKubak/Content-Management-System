@@ -1,4 +1,4 @@
-from users.email.configuration import MailConfig
+from users.extensions import mail_config
 from users.model.user import UserModel
 from dataclasses import dataclass
 from typing import Any
@@ -168,5 +168,5 @@ class UserService:
             raise ValueError('Email already in use')
         user = UserModel.from_json(data)
         user.add()
-        MailConfig.send_activation_mail(user.id, user.email)
+        mail_config.send_activation_mail(user.id, user.email)
         return user

@@ -1,4 +1,4 @@
-from users.db.configuration import sa
+from users.extensions import sa
 from sqlalchemy import Integer, String, Boolean, func, Enum
 from sqlalchemy.orm import Mapped, mapped_column
 from werkzeug.security import generate_password_hash, check_password_hash

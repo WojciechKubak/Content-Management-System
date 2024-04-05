@@ -137,7 +137,7 @@ class UserActivationResource(Resource):
             Response: The HTTP response confirming the activation or an error message.
         """
         timestamp = float(request.args.get('timestamp'))
-        if timestamp < datetime.utcnow().timestamp() * 1000:
+        if timestamp < datetime.now().timestamp() * 1000:
             return make_response({'message': 'Activation link expired'}, 400)
         try:
             user_service.activate_user(request.args.get('id'))

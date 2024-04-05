@@ -1,5 +1,5 @@
 from users.model.user import UserModel
-from users.db.configuration import sa
+from users.extensions import sa
 from typing import Any, Callable
 
 

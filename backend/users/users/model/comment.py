@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, String, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from users.db.configuration import sa
+from users.extensions import sa
 from datetime import datetime
 from typing import Any, Self
 

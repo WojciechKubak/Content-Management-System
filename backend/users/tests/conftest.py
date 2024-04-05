@@ -1,6 +1,6 @@
 from users import create_app
 from users.config import TestingConfig
-from users.db.configuration import sa
+from users.extensions import sa
 from werkzeug.security import generate_password_hash
 from flask.testing import Client
 from flask import Flask

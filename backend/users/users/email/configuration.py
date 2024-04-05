@@ -1,9 +1,11 @@
+
+from users.settings import REGISTER_TOKEN_LIFESPAN
 from flask_mail import Mail, Message
+from jinja2 import PackageLoader, Environment
 from flask import Flask
 from dataclasses import dataclass, field
 from jinja2 import Environment
 from datetime import datetime
-from typing import Self
 import os
 
 
@@ -18,28 +20,28 @@ class MailConfig:
         mail (Mail): An instance of the Flask-Mail class for managing email functionality.
         template_env (Environment): An instance of the Jinja2 Environment class for rendering email templates.
     """
-    mail: Mail = field(default=None, init=False)
-    template_env: Environment = field(default=None, init=False)
-
-    @classmethod
-    def prepare_mail(cls: Self, app: Flask, template_env: Environment) -> None:
+    mail: Mail = field(default=None)
+    template_env: Environment = field(
+        default=Environment(
+            loader=PackageLoader('users.email', 'templates')
+            )
+        )
+    
+    def init_app(self, app: Flask) -> None:
         """
         Prepare Mail Configuration
 
-        Configures the MailConfig class with a Flask app and a Jinja2 template environment.
+        Configures the MailConfig class with a Flask app.
 
         Args:
             app (Flask): The Flask app instance.
-            template_env (Environment): The Jinja2 template environment.
 
         Returns:
             None
         """
-        cls.mail = Mail(app)
-        cls.template_env = template_env
+        self.mail = Mail(app)
 
-    @classmethod
-    def send_activation_mail(cls: Self, id_: int, email: str) -> None:
+    def send_activation_mail(self, id_: int, email: str) -> None:
         """
         Send Activation Mail
 
@@ -52,9 +54,9 @@ class MailConfig:
         Returns:
             None
         """
-        timestamp = datetime.utcnow().timestamp() * 1000 + int(os.getenv('REGISTER_TOKEN_LIFESPAN'))
+        timestamp = datetime.now().timestamp() * 1000 + REGISTER_TOKEN_LIFESPAN
         activation_url = f'http://localhost:81/users/activate?id={id_}&timestamp={timestamp}'
-        template = cls.template_env.get_template('activation_mail.html')
+        template = self.template_env.get_template('activation_mail.html')
         html_body = template.render(activation_url=activation_url)
 
         message = Message(
@@ -63,4 +65,4 @@ class MailConfig:
             recipients=[email],
             html=html_body
         )
-        MailConfig.mail.send(message)
+        self.mail.send(message)
