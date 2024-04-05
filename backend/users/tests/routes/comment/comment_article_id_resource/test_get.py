@@ -3,7 +3,7 @@ from typing import Any
 
 
 class TestCommentArticleIdResource:
-    request_path = '/comments/article'
+    request_path = 'users/comments/article'
 
     def test_when_no_data_found(self, client: Client) -> None:
         response = client.get(f"{self.request_path}/1111")

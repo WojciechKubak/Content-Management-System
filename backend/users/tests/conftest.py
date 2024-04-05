@@ -1,4 +1,5 @@
-from users.config import app_config
+from users import create_app
+from users.config import TestingConfig
 from users.db.configuration import sa
 from werkzeug.security import generate_password_hash
 from flask.testing import Client
@@ -7,17 +8,13 @@ from typing import Any
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def app() -> Flask:
-    app = Flask(__name__)
-    app.config.from_object(app_config)
-    yield app
+    yield create_app(TestingConfig)
 
 
 @pytest.fixture(autouse=True)
 def db_setup_and_teardown(app: Flask):
-    sa.init_app(app)
-
     with app.app_context():
         sa.create_all()
 

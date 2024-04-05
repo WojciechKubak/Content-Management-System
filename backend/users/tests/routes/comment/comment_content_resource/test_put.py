@@ -4,7 +4,7 @@ import pytest
 
 
 class TestCommentContentResourcePut:
-    request_path = '/comments'
+    request_path = 'users/comments'
 
     @pytest.fixture(scope='function')
     def comment_id(self, comment_model_data: dict[str, Any]) -> int:

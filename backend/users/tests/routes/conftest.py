@@ -1,4 +1,3 @@
-from users.config import mail_config
 from users.email.configuration import MailConfig
 from users.db.configuration import sa
 from users.model.user import UserModel
@@ -14,7 +13,6 @@ def app(app: Flask) -> Flask:
     templates_env = Environment(
         loader=PackageLoader('users.email', 'templates'))
 
-    app.config.update(mail_config)
     MailConfig.prepare_mail(app, templates_env)
 
     yield app

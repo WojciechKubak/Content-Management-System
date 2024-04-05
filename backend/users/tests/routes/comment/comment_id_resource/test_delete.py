@@ -4,7 +4,7 @@ from typing import Any
 
 
 class TestCommentIdResourceDelete:
-    resource = '/comments'
+    resource = 'users/comments'
 
     def test_when_service_error_occurrs(self, client: Client) -> None:
         response = client.delete(f'{self.resource}/11111')

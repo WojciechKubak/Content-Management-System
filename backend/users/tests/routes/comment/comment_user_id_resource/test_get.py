@@ -4,7 +4,7 @@ from typing import Any
 
 
 class TestCommentUserIdResourceGet:
-    resource = '/comments/user'
+    resource = 'users/comments/user'
 
     def test_when_service_error_occurs(self, client: Client) -> None:
         response = client.get(f'{self.resource}/1111')

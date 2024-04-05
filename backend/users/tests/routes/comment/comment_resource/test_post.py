@@ -4,7 +4,7 @@ from typing import Any
 
 
 class TestAddCommentResourcePost:
-    request_path = '/comments/'
+    request_path = 'users/comments'
 
     def test_when_form_validation_error_occurs(self, client: Client) -> None:
         response = client.post(self.request_path, json={})
