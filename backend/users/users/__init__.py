@@ -17,6 +17,7 @@ from users.routes.comment import (
 )
 from flask import Flask, Response, make_response
 from flask_restful import Api
+from flask_migrate import Migrate
 
 
 
@@ -35,6 +36,7 @@ def create_app(config: Config) -> Flask:
     app.config.from_object(config)
     
     sa.init_app(app)
+    migrate = Migrate(app, sa)
     mail_config.init_app(app)
 
     api = Api(app, prefix='/users')
@@ -56,6 +58,6 @@ def create_app(config: Config) -> Flask:
         @app.route('/health')
         def index() -> Response:
             """Default route fot health check"""
-            return make_response({'message': f'Users home page'}, 200)
+            return make_response({'message': 'Users home page'}, 200)
 
         return app

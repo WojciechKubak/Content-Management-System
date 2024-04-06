@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 gunicorn = "==21.2.0"
-alembic = "==1.12.1"
 aniso8601 = "==9.0.1"
 blinker = "==1.7.0"
 click = "==8.1.7"
@@ -34,6 +33,8 @@ install = "*"
 flask-wtf = "*"
 email-validator = "*"
 flask-sqlalchemy = "*"
+flask-migrate = "*"
+alembic = "*"
 
 [dev-packages]
 coverage = "*"
