@@ -1,3 +1,4 @@
+from users.persistance.entity import Comment, User
 from users.service.comment import CommentService
 from typing import Any
 import pytest
@@ -16,3 +17,4 @@ class TestCommentServiceGetArticleComments:
             comment_model_data: dict[str, Any]
     ) -> None:
         assert comment_service.get_article_comments(comment_model_data['user_id'])
+

@@ -1,15 +1,16 @@
-from users import create_app
+from users.service.user import UserService
+from users.service.comment import CommentService
+from users.app import create_app
 from users.config import TestingConfig
-from users.extensions import sa
-from werkzeug.security import generate_password_hash
+from users.persistance.configuration import sa
 from flask.testing import Client
 from flask import Flask
-from typing import Any
+from typing import Any, Generator
 import pytest
 
 
 @pytest.fixture(scope='function')
-def app() -> Flask:
+def app() -> Generator[Flask, None, None]:
     yield create_app(TestingConfig)
 
 
@@ -31,6 +32,16 @@ def client(app: Flask) -> Client:
 
 
 @pytest.fixture(scope='session')
+def comment_service() -> CommentService:
+    return CommentService()
+
+
+@pytest.fixture(scope='session')
+def user_service() -> UserService:
+    return UserService()
+
+
+@pytest.fixture(scope='session')
 def user_dto() -> dict[str, Any]:
     return {
         'username': 'User',
@@ -46,18 +57,3 @@ def comment_dto(user_model_data: dict[str, Any]) -> dict[str, Any]:
         'article_id': 1,
         'user_id': user_model_data['id']
     }
-
-
-@pytest.fixture(scope='session')
-def user_model_data(user_dto: dict[str, Any]) -> dict[str, Any]:
-    return user_dto | {
-        'id': 1,
-        'role': 'admin',
-        'is_active': False,
-        'password': generate_password_hash(user_dto['password'])
-    }
-
-
-@pytest.fixture(scope='session')
-def comment_model_data(comment_dto: dict[str, Any]) -> dict[str, Any]:
-    return comment_dto | {'id': 1}

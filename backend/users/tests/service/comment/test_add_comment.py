@@ -1,5 +1,5 @@
 from users.service.comment import CommentService
-from users.model.comment import CommentModel
+from users.persistance.entity import Comment, User
 from typing import Any
 import pytest
 
@@ -13,4 +13,4 @@ class TestCommentServiceAddComment:
 
     def test_when_added_succesfully(self, comment_service: CommentService, comment_dto: dict[str, Any]) -> None:
         result = comment_service.add_comment(comment_dto)
-        assert CommentModel.query.filter_by(id=result.id)
+        assert Comment.query.filter_by(id=result.id)

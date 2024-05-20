@@ -1,9 +1,10 @@
-from users.model.user import UserModel
+
+from users.persistance.entity import Comment, User
 from typing import Any
 
 
 def test_user_model_from_json(user_dto: dict[str, Any]) -> None:
-    user = UserModel.from_json(user_dto)
+    user = User.from_dict(user_dto)
 
     user_dto_copy = user_dto.copy()
     dto_password = user_dto_copy.pop('password')

@@ -1,5 +1,5 @@
+from users.persistance.entity import Comment, User
 from flask.testing import Client
-from users.model.comment import CommentModel
 from typing import Any
 
 
@@ -15,4 +15,4 @@ class TestCommentIdResourceDelete:
         comment_id = comment_model_data['id']
         response = client.delete(f'{self.resource}/{comment_id}')
         assert 200 == response.status_code
-        assert not CommentModel.query.filter_by(id=comment_id).first()
+        assert not Comment.query.filter_by(id=comment_id).first()

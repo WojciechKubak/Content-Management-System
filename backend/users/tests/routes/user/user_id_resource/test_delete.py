@@ -1,5 +1,6 @@
 from flask.testing import Client
-from users.model.user import UserModel
+
+from users.persistance.entity import Comment, User
 from typing import Any
 
 
@@ -15,4 +16,4 @@ class TestUserIdResourceDelete:
         user_id = user_model_data['id']
         response = client.delete(f'{self.resource}/{user_id}')
         assert 200 == response.status_code
-        assert not UserModel.query.filter_by(id=user_id).first()
+        assert not User.query.filter_by(id=user_id).first()

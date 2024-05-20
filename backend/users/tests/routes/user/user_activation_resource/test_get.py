@@ -1,5 +1,6 @@
-from users.model.user import UserModel
-from users.settings import REGISTER_TOKEN_LIFESPAN
+
+from users.persistance.entity import Comment, User
+from users.env_config import REGISTER_TOKEN_LIFESPAN
 from flask.testing import Client
 from datetime import datetime
 from typing import Any
@@ -38,4 +39,4 @@ class TestUserActivationResourceGet:
         }
         response = client.get(self.resource, query_string=request_data)
         assert b'User activated' in response.data
-        assert UserModel.query.filter_by(id=user_model_id).first().is_active
+        assert User.query.filter_by(id=user_model_id).first().is_active

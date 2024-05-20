@@ -1,5 +1,6 @@
 from users.service.comment import CommentService
-from users.model.comment import CommentModel
+from users.persistance.entity import Comment, User
+
 from typing import Any
 import pytest
 
@@ -17,4 +18,4 @@ class TestCommentServiceDeleteComment:
             comment_model_data: dict[str, Any]
     ) -> None:
         result = comment_service.delete_comment(comment_model_data['id'])
-        assert not CommentModel.query.filter_by(id=result).first()
+        assert not Comment.query.filter_by(id=result).first()

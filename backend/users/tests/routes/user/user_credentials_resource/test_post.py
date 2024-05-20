@@ -1,5 +1,6 @@
-from users.extensions import sa
-from users.model.user import UserModel
+from users.persistance.configuration import sa
+
+from users.persistance.entity import Comment, User
 from flask.testing import Client
 from typing import Any
 
@@ -12,7 +13,7 @@ class TestUserCredentialsResourceGet:
         assert b'User not found' in response.data
 
     def test_when_credentials_are_correct(self, client: Client, user_dto: dict[str, Any]) -> None:
-        user = sa.session.query(UserModel).first()
+        user = sa.session.query(User).first()
         user.is_active = True
         sa.session.commit()
 

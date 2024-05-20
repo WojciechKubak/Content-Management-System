@@ -1,7 +1,9 @@
 from users.service.user import UserService
-from users.model.user import UserModel
+
+from users.persistance.entity import Comment, User
 from typing import Any
 import pytest
+
 
 
 class TestUserServiceAddUser:
@@ -19,4 +21,4 @@ class TestUserServiceAddUser:
     def test_when_user_added_successfully(self, user_service: UserService, user_dto: dict[str, Any]) -> None:
         new_user_data = {k: v + 'new' for k, v in user_dto.items()}
         result = user_service.add_user(new_user_data)
-        assert UserModel.query.filter_by(username=result.username).first()
+        assert User.query.filter_by(username=result.username).first()

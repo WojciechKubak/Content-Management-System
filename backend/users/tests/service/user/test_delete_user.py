@@ -1,5 +1,7 @@
 from users.service.user import UserService
-from users.model.user import UserModel
+
+
+from users.persistance.entity import Comment, User
 from typing import Any
 import pytest
 
@@ -13,4 +15,4 @@ class TestUserServiceDeleteUser:
 
     def test_when_deleted_successfully(self, user_service: UserService, user_model_data: dict[str, Any]) -> None:
         result = user_service.delete_user(user_model_data['id'])
-        assert not UserModel.query.filter_by(id=result).first()
+        assert not User.query.filter_by(id=result).first()

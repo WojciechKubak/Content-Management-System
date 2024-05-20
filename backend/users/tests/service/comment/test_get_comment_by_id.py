@@ -1,5 +1,6 @@
+from users.persistance.entity import Comment, User
+
 from users.service.comment import CommentService
-from users.model.comment import CommentModel
 from typing import Any
 import pytest
 
@@ -17,4 +18,4 @@ class TestCommentServiceGetCommentById:
             comment_model_data: dict[str, Any]
     ) -> None:
         result = comment_service.get_comment_by_id(comment_model_data['id'])
-        assert CommentModel.query.filter_by(id=result.id).first() == result
+        assert Comment.query.filter_by(id=result.id).first() == result

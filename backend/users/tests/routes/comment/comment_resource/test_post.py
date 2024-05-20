@@ -1,4 +1,4 @@
-from users.model.comment import CommentModel
+from users.persistance.entity import Comment, User
 from flask.testing import Client
 from typing import Any
 
@@ -18,6 +18,6 @@ class TestAddCommentResourcePost:
 
     def test_when_added_succesfully(self, client: Client, comment_dto: dict[str, Any]) -> None:
         response = client.post(self.request_path, json=comment_dto)
-        expected = CommentModel.query.filter_by(id=response.json.get('id')).first().to_json()
+        expected = Comment.query.filter_by(id=response.json.get('id')).first().to_json()
         assert 201 == response.status_code
         assert expected == response.json

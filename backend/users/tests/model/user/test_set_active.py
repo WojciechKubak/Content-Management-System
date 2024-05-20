@@ -1,6 +1,7 @@
-from users.model.user import UserModel
+
+from users.persistance.entity import Comment, User
 
 
-def test_set_active(user_model: UserModel) -> None:
+def test_set_active(user_model: User) -> None:
     user_model.set_active()
-    assert UserModel.query.filter_by(id=user_model.id).first().is_active
+    assert User.query.filter_by(id=user_model.id).first().is_active

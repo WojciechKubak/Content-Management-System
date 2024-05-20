@@ -1,5 +1,6 @@
 from users.service.user import UserService
-from users.model.user import UserModel
+
+from users.persistance.entity import Comment, User
 from typing import Any
 import pytest
 
@@ -17,5 +18,5 @@ class TestUserServiceGetUserById:
 
     def test_when_user_found_sucessfully(self, user_service: UserService, user_id: int) -> None:
         result = user_service.get_user_by_id(user_id)
-        expected = UserModel.query.filter_by(id=user_id).first()
+        expected = User.query.filter_by(id=user_id).first()
         assert expected.username == result.username

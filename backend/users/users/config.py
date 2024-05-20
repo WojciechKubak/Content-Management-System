@@ -1,8 +1,6 @@
-from dotenv import load_dotenv
 import ast
 import os
 
-load_dotenv()
 
 class Config(object):
     """Base configuration class with common settings for all environments."""

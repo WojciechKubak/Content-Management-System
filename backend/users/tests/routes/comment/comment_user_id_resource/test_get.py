@@ -1,4 +1,4 @@
-from users.model.comment import CommentModel
+from users.persistance.entity import Comment, User
 from flask.testing import Client
 from typing import Any
 
@@ -15,4 +15,4 @@ class TestCommentUserIdResourceGet:
         user_id = user_model_data['id']
         response = client.get(f'{self.resource}/{user_id}')
         assert 200 == response.status_code
-        assert len(CommentModel.query.filter_by(user_id=user_id).all()) == len(response.json)
+        assert len(Comment.query.filter_by(user_id=user_id).all()) == len(response.json)

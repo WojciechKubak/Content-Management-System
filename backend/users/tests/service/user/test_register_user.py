@@ -1,5 +1,6 @@
 from users.service.user import UserService
-from users.model.user import UserModel
+
+from users.persistance.entity import Comment, User
 from typing import Any
 import pytest
 
@@ -20,5 +21,5 @@ class TestUserServiceRegisterUser:
 
     def test_when_registered_succesfully(self, user_service: UserService, user_dto: dict[str, Any]) -> None:
         result = user_service.register_user(user_dto | {'username': self.username, 'email': self.email})
-        expected = UserModel.query.filter_by(username=self.username).first()
+        expected = User.query.filter_by(username=self.username).first()
         assert expected.username == result.username
