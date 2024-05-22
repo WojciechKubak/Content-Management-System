@@ -6,150 +6,63 @@ from users.api.exceptions import (
     UserNotFoundException,
     UserAlreadyActiveException,
     IncorrectPasswordException,
-    UserNotActiveException
+    UserNotActiveException,
+    InvalidRoleException,
+    ActivationLinkExpiredException,
+    NotCommentOwnerException
 )
 from users.email.configuration import mail
-from users.persistance.entity import Comment, User
+from users.persistance.entity import Comment, User, UserRoleType
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
-
-
-@dataclass
-class CommentService:
-    """Service class for handling operations related to comments."""
-
-    def add_comment(self, data: dict[str, Any]) -> Comment:
-        """
-        Add a new comment based on the provided data.
-
-        Args:
-            data (dict[str, Any]): Data for creating the new comment.
-
-        Returns:
-            Comment: The created comment.
-        """
-        if not User.find_by_id(data.get('user_id')):
-            raise UserNotFoundException()
-        comment = Comment.from_dict(data)
-        comment.add()
-        return comment
-
-    def update_comment_content(self, data: dict[str, Any]) -> Comment:
-        """
-        Update the content of a comment based on the provided data.
-
-        Args:
-            data (dict[str, Any]): Data for updating the comment content.
-
-        Returns:
-            Comment: The updated comment.
-        """
-        result = Comment.find_by_id(data.get('id'))
-        if not result:
-            raise CommentNotFoundException()
-        comment = Comment.from_dict(data)
-        comment.update()
-        return comment
-
-    def delete_comment(self, id_: int) -> int:
-        """
-        Delete a comment by its ID.
-
-        Args:
-            id_ (int): The ID of the comment to delete.
-
-        Returns:
-            int: The ID of the deleted comment.
-        """
-        result = Comment.find_by_id(id_)
-        if not result:
-            raise CommentNotFoundException()
-        result.delete()
-        return result.id
-
-    def get_comment_by_id(self, id_: int) -> Comment:
-        """
-        Get a comment by its ID.
-
-        Args:
-            id_ (int): The ID of the comment to retrieve.
-
-        Returns:
-            Comment: The retrieved comment.
-        """
-        result = Comment.find_by_id(id_)
-        if not result:
-            raise CommentNotFoundException()
-        return result
-
-    def get_user_comments(self, user_id: int) -> list[Comment]:
-        """
-        Get all comments for a specific user.
-
-        Args:
-            user_id (int): The ID of the user.
-
-        Returns:
-            list[Comment]: List of comments for the specified user.
-        """
-        if not User.find_by_id(user_id):
-            raise UserNotFoundException()
-        return Comment.query.filter_by(user_id=user_id).all()
-
-    def get_article_comments(self, article_id: int) -> list[Comment]:
-        """
-        Get all comments for a specific article.
-
-        Args:
-            article_id (int): The ID of the article.
-
-        Returns:
-            list[Comment]: List of comments for the specified article.
-        """
-        return Comment.query.filter_by(article_id=article_id).all()
 
 
 @dataclass
 class UserService:
     """Service class for handling operations related to users."""
 
-    def add_user(self, data: dict[str, Any]) -> User:
+    def change_user_role(self, user_id: int, role: str) -> User:
         """
-        Add a new user based on the provided data.
+        Change the role of a user by their ID.
 
         Args:
-            data (dict[str, Any]): Data for creating the new user.
-
+            id_ (int): The ID of the user to update.
+            role (UserRoleType): The new role for the user.
+        
         Returns:
-            User: The created user.
+            User: The updated user.
         """
-        if User.find_by_username(data.get('username')):
-            raise UserNameInUseException()
-        if User.find_by_email(data.get('email')):
-            raise EmailInUseException()
-        user = User.from_dict(data)
-        user.add()
-        return user
+        result = User.find_by_id(user_id)
+        if not result:
+            raise UserNotFoundException()
+        if role.upper() not in UserRoleType.__members__:
+            raise InvalidRoleException()
+        result.role = UserRoleType[role.upper()]
+        result.update()
+        return result
 
-    def update_user(self, data: dict[str, Any]) -> User:
+    def change_user_username(self, user_id: int, new_username: str) -> User:
         """
-        Update a user based on the provided data.
+        Change the username of a user by their ID.
 
         Args:
-            data (dict[str, Any]): Data for updating the user.
+            id_ (int): The ID of the user to update.
+            new_username (str): The new username for the user.
 
         Returns:
             User: The updated user.
         """
-        result = User.find_by_id(data.pop('id'))
+        result = User.find_by_id(user_id)
         if not result:
             raise UserNotFoundException()
-        filtered_data = {key: val for key, val in data.items() if val}
-        user = User.from_dict(result.to_dict() | filtered_data)
-        user.update()
-        return user
+        if User.find_by_username(new_username):
+            raise UserNameInUseException()
+        result.username = new_username
+        result.update()
+        return result
 
-    def delete_user(self, id_: str) -> int:
+    def delete_user(self, user_id: str) -> int:
         """
         Delete a user by their ID.
 
@@ -159,13 +72,13 @@ class UserService:
         Returns:
             int: The ID of the deleted user.
         """
-        result = User.find_by_id(id_)
+        result = User.find_by_id(user_id)
         if not result:
             raise UserNotFoundException()
         result.delete()
         return result.id
 
-    def get_user_by_name(self, username: str) -> User:
+    def get_user_by_username(self, username: str) -> User:
         """
         Get a user by their username.
 
@@ -195,7 +108,7 @@ class UserService:
             raise UserNotFoundException()
         return result
 
-    def get_user_by_id(self, id_: int) -> User:
+    def get_user_by_id(self, user_id: int) -> User:
         """
         Get a user by their ID.
 
@@ -205,7 +118,7 @@ class UserService:
         Returns:
             User: The retrieved user.
         """
-        result = User.find_by_id(id_)
+        result = User.find_by_id(user_id)
         if not result:
             raise UserNotFoundException()
         return result
@@ -219,7 +132,7 @@ class UserService:
         """
         return User.query.all()
 
-    def activate_user(self, id_: int) -> User:
+    def activate_user(self, user_id: int, timestamp: float) -> User:
         """
         Activate a user by their ID.
 
@@ -229,15 +142,18 @@ class UserService:
         Returns:
             User: The activated user.
         """
-        result = User.find_by_id(id_)
+        if timestamp < datetime.now().timestamp() * 1000:
+            raise ActivationLinkExpiredException()
+        result = User.find_by_id(user_id)
         if not result:
             raise UserNotFoundException()
         if result.is_active:
             raise UserAlreadyActiveException()
-        result.set_active()
+        result.is_active = True
+        result.update()
         return result
 
-    def check_login_credentials(self, username: str, password: str) -> User:
+    def verify_credentials(self, username: str, password: str) -> User:
         """
         Check login credentials and return the user.
 
@@ -275,3 +191,100 @@ class UserService:
         user.add()
         mail.send_activation_mail(user.id, user.email)
         return user
+
+
+@dataclass
+class CommentService:
+    """Service class for handling operations related to comments."""
+
+    def add_comment(self, data: dict[str, Any]) -> Comment:
+        """
+        Add a new comment based on the provided data.
+
+        Args:
+            data (dict[str, Any]): Data for creating the new comment.
+
+        Returns:
+            Comment: The created comment.
+        """
+        if not User.find_by_id(data.get('user_id')):
+            raise UserNotFoundException()
+        comment = Comment.from_dict(data)
+        comment.add()
+        return comment
+
+    def update_comment_content(self, data: dict[str, Any]) -> Comment:
+        """
+        Update the content of a comment based on the provided data.
+
+        Args:
+            data (dict[str, Any]): Data for updating the comment content.
+
+        Returns:
+            Comment: The updated comment.
+        """
+        result = Comment.find_by_id(data.get('id_'))
+        if not result:
+            raise CommentNotFoundException()
+        if not result.user_id == data.get('user_id'):
+            raise NotCommentOwnerException()
+        result.content = data.get('content')
+        result.update()
+        return result
+
+    def delete_comment(self, comment_id: int) -> int:
+        """
+        Delete a comment by its ID.
+
+        Args:
+            id_ (int): The ID of the comment to delete.
+
+        Returns:
+            int: The ID of the deleted comment.
+        """
+        result = Comment.find_by_id(comment_id)
+        if not result:
+            raise CommentNotFoundException()
+        result.delete()
+        return result.id
+
+    def get_comment_by_id(self, comment_id: int) -> Comment:
+        """
+        Get a comment by its ID.
+
+        Args:
+            id_ (int): The ID of the comment to retrieve.
+
+        Returns:
+            Comment: The retrieved comment.
+        """
+        result = Comment.find_by_id(comment_id)
+        if not result:
+            raise CommentNotFoundException()
+        return result
+
+    def get_user_comments(self, user_id: int) -> list[Comment]:
+        """
+        Get all comments for a specific user.
+
+        Args:
+            user_id (int): The ID of the user.
+
+        Returns:
+            list[Comment]: List of comments for the specified user.
+        """
+        if not User.find_by_id(user_id):
+            raise UserNotFoundException()
+        return Comment.query.filter_by(user_id=user_id).all()
+
+    def get_article_comments(self, article_id: int) -> list[Comment]:
+        """
+        Get all comments for a specific article.
+
+        Args:
+            article_id (int): The ID of the article.
+
+        Returns:
+            list[Comment]: List of comments for the specified article.
+        """
+        return Comment.query.filter_by(article_id=article_id).all()

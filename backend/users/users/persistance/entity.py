@@ -1,6 +1,6 @@
 from users.persistance.configuration import sa
-from sqlalchemy import Integer, String, Boolean, func, Enum
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Integer, String, Boolean, func, Enum, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Enum as SQLAlchemyEnum
 from werkzeug.security import generate_password_hash, check_password_hash
 from typing import Self, Any
@@ -8,7 +8,7 @@ from datetime import datetime
 from enum import Enum
 
 
-class UserRoles(Enum):
+class UserRoleType(Enum):
     """An enumeration representing the status of a translation."""
 
     USER = 'USER'
@@ -38,8 +38,10 @@ class User(sa.Model):
     email: Mapped[str] = mapped_column(String(255))
     password: Mapped[str] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=False)
-    role: Mapped[UserRoles] = mapped_column(
-        SQLAlchemyEnum(UserRoles), default=UserRoles.USER)
+    role: Mapped[UserRoleType] = mapped_column(
+        SQLAlchemyEnum(UserRoleType), default=UserRoleType.USER)
+    
+    comments = relationship("Comment", backref="user", cascade="all, delete-orphan")
 
     created_at: Mapped[datetime] = mapped_column(insert_default=func.utc_timestamp())
     updated_at: Mapped[datetime] = mapped_column(default=func.utc_timestamp(), onupdate=func.utc_timestamp())
@@ -73,11 +75,6 @@ class User(sa.Model):
     def delete(self) -> None:
         """Delete the User instance from the session and commit the changes."""
         sa.session.delete(self)
-        sa.session.commit()
-
-    def set_active(self) -> None:
-        """Set the user's 'is_active' flag to True and commit the changes."""
-        self.is_active = True
         sa.session.commit()
 
     def check_password(self, password: str) -> bool:
@@ -165,7 +162,7 @@ class Comment(sa.Model):
     id: Mapped[int] = mapped_column(Integer(), primary_key=True)
     content: Mapped[str] = mapped_column(String(1000))
     article_id: Mapped[int] = mapped_column(Integer(), nullable=False)
-    user_id: Mapped[int] = mapped_column(Integer(), ForeignKey('users.id'))
+    user_id: Mapped[int] = mapped_column(Integer(), ForeignKey('users.id', ondelete='CASCADE'))
 
     created_at: Mapped[datetime] = mapped_column(insert_default=func.utc_timestamp())
     updated_at: Mapped[datetime] = mapped_column(default=func.utc_timestamp(), onupdate=func.utc_timestamp())

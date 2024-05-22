@@ -1,3 +1,4 @@
+from users.api.routes import user_bp
 from users.email.configuration import mail
 from users.persistance.configuration import sa
 from users.config import Config
@@ -25,6 +26,8 @@ def create_app(config: Config) -> Flask:
     sa.init_app(app)
     migrate = Migrate(app, sa)
     mail.init_app(app)
+
+    app.register_blueprint(user_bp)
 
     with app.app_context():
 

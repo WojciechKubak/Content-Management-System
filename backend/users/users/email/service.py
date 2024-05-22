@@ -16,7 +16,7 @@ class MailService:
         mail (Mail): An instance of the Flask-Mail class for managing email functionality.
         template_env (Environment): An instance of the Jinja2 Environment class for rendering email templates.
     """
-    register_token_lifespan_secs: str
+    register_token_lifespan: str
     mail_username: str
     base_url: str
     template_module: str
@@ -52,8 +52,9 @@ class MailService:
         Returns:
             None
         """
-        timestamp = datetime.now().timestamp() * 1000 + self.register_token_lifespan_secs
-        activation_url = f'{self.base_url}/activate?id={id_}&timestamp={timestamp}'
+        timestamp = datetime.now().timestamp() * 1000 + \
+            self.register_token_lifespan * 1000
+        activation_url = f'{self.base_url}/users/activate?id={id_}&timestamp={timestamp}'
         template = self.template_env.get_template('activation_mail.html')
         html_body = template.render(activation_url=activation_url)
 

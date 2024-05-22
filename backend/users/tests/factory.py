@@ -1,7 +1,6 @@
 from users.persistance.configuration import sa
-, UserRoles
-from users.persistance.entity import Comment, User
-from factory import SubFactory, Sequence, PostGenerationMethodCall, post_generation
+from users.persistance.entity import Comment, User, UserRoleType
+from factory import DictFactory, Sequence, LazyAttribute
 from factory.alchemy import SQLAlchemyModelFactory
 from werkzeug.security import generate_password_hash
 from datetime import datetime
@@ -11,31 +10,41 @@ class UserFactory(SQLAlchemyModelFactory):
     class Meta:
         model = User
         sqlalchemy_session = sa.session
+        sqlalchemy_session_persistence = 'commit'
+        exclude = ('raw_password',)
 
     id = Sequence(lambda n: n + 1)
     username = Sequence(lambda n: f'user{n}')
     email = Sequence(lambda n: f'user{n}@example.com')
-    password = PostGenerationMethodCall('set_password', 'password')
+    password = LazyAttribute(lambda obj: generate_password_hash(obj.raw_password))
+    raw_password = 'password'
     is_active = False
-    role = UserRoles.USER
+    role = UserRoleType.USER
     created_at = datetime.now()
     updated_at = datetime.now()
-
-    @post_generation
-    def password(self, create, extracted, **kwargs):
-        if not create:
-            return
-        self.password = generate_password_hash(extracted)
 
 
 class CommentFactory(SQLAlchemyModelFactory):
     class Meta:
         model = Comment
         sqlalchemy_session = sa.session
+        sqlalchemy_session_persistence = 'commit'  
 
     id = Sequence(lambda n: n + 1)
     content = Sequence(lambda n: f'Comment content {n}')
-    article_id = Sequence(lambda n: n)
-    user = SubFactory(UserFactory)
+    article_id = Sequence(lambda n: n + 1)
+    user_id = Sequence(lambda n: n + 1)
     created_at = datetime.now()
     updated_at = datetime.now()
+
+
+class UserDtoFactory(DictFactory):
+    username = 'User'
+    email = 'user@example.com'
+    password = 'password'
+
+
+class CommentDtoFactory(DictFactory):
+    content = 'dummy content'
+    article_id = Sequence(lambda n: n + 1)
+    user_id = Sequence(lambda n: n + 1)
