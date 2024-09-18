@@ -2,9 +2,17 @@ from translations.persistance.repository import (
     LanguageRepository,
     TranslationRepository,
 )
+
+from translations.integrations.aws.client import text_to_file_upload, file_get_content
+from translations.config.settings.storages import STORAGE_TYPE_STRATEGY
+from translations.enums.storages import StorageType
+from translations.common.services import (
+    text_to_local_file_upload,
+    file_get_local_content,
+)
+
 from translations.api.dto import TranslationDTO, ListTranslationDTO
 from translations.persistance.entity import StatusType
-from translations.integrations.aws.client import text_to_file_upload, file_get_content
 from translations.broker.kafka import KafkaService
 from translations.gpt.chat_gpt import ChatGPTService
 from translations.gpt.dto import (
@@ -23,6 +31,20 @@ from translations.api.exceptions import (
 from dataclasses import dataclass
 
 
+def get_content(file_path: str) -> str:
+    if STORAGE_TYPE_STRATEGY == StorageType.LOCAL:
+        return file_get_local_content(file_path)
+    else:
+        return file_get_content(file_path)
+
+
+def file_upload(file_name: str, content: str) -> str:
+    if STORAGE_TYPE_STRATEGY == STORAGE_TYPE_STRATEGY.LOCAL:
+        text_to_local_file_upload(file_name, content)
+    else:
+        text_to_file_upload(file_name, content)
+
+
 @dataclass
 class ApiService:
     language_repository: LanguageRepository
@@ -36,13 +58,14 @@ class ApiService:
         translation = self.translation_repository.find_by_id(translation_id)
         if not translation:
             raise EntityNotFoundError("Translation not found")
+
+        original = get_content(translation.article.content_path)
+        translated = (
+            get_content(translation.content_path) if translation.content_path else None
+        )
+
         return TranslationDTO.from_entity(translation).with_contents(
-            file_get_content(translation.article.content_path),
-            (
-                file_get_content(translation.content_path)
-                if translation.content_path
-                else None
-            ),
+            original, translated
         )
 
     def get_translations_by_language(
@@ -50,7 +73,9 @@ class ApiService:
     ) -> list[ListTranslationDTO]:
         if not self.language_repository.find_by_id(language_id):
             raise EntityNotFoundError("Language not found")
+
         result = self.translation_repository.find_by_language(language_id)
+
         return [ListTranslationDTO.from_entity(translation) for translation in result]
 
     def get_all_translations(self) -> list[ListTranslationDTO]:
@@ -62,22 +87,24 @@ class ApiService:
     ) -> TranslationDTO:
         if not new_content:
             raise MissingDataError()
+
         result = self.translation_repository.find_by_id(translation_id)
         if not result:
             raise EntityNotFoundError("Translation not found")
+
         if result.status != StatusType.PENDING:
             raise TranslationNotPendingError()
+
         # todo: those conditions might be merged
         if result.content_path:
-            text_to_file_upload(result.content_path, new_content)
+            file_upload(result.content_path, new_content)
+
         else:
-            result.content_path = text_to_file_upload(
-                new_content, self.translations_subfolder
-            )
+            result.content_path = file_upload(new_content, self.translations_subfolder)
             self.translation_repository.save_or_update(result)
 
         return TranslationDTO.from_entity(result).with_contents(
-            file_get_content(result.article.content_path), new_content
+            get_content(result.article.content_path), new_content
         )
 
     def change_translation_title(
@@ -86,8 +113,10 @@ class ApiService:
         if not new_title:
             raise MissingDataError()
         result = self.translation_repository.find_by_id(translation_id)
+
         if not result:
             raise EntityNotFoundError("Translation not found")
+
         if result.status != StatusType.PENDING:
             raise TranslationNotPendingError()
 
@@ -96,8 +125,8 @@ class ApiService:
 
         # todo: this might get merged
         return TranslationDTO.from_entity(result).with_contents(
-            file_get_content(result.article.content_path),
-            (file_get_content(result.content_path) if result.content_path else None),
+            get_content(result.article.content_path),
+            get_content(result.content_path) if result.content_path else None,
         )
 
     def change_translation_status(
@@ -106,11 +135,14 @@ class ApiService:
         result = self.translation_repository.find_by_id(translation_id)
         if not result:
             raise EntityNotFoundError("Translation not found")
+
         if redactor_id <= 0:
             raise InvalidRedactorIdError()
+
         # todo: add this again
         # if status_type.upper() not in StatusType.__members__:
         #     raise InvalidStatusOperationError()
+
         if result.status == StatusType.RELEASED:
             raise TranslationAlreadyReleasedError()
 
@@ -139,25 +171,33 @@ class ApiService:
                 result.translator_id = None
 
         self.translation_repository.save_or_update(result)
+
         return ListTranslationDTO.from_entity(result)
 
     def translate_title(self, translation_id: int) -> str:
         result = self.translation_repository.find_by_id(translation_id)
+
         if not result:
             raise EntityNotFoundError("Translation not found")
+
         if result.status != StatusType.PENDING:
             raise TranslationNotPendingError()
+
         return self.chat_gpt_service.get_translation(
             ChatGptTitleTranslationDTO.from_entity(result)
         )
 
     def translate_content(self, translation_id: int) -> str:
         result = self.translation_repository.find_by_id(translation_id)
+
         if not result:
             raise EntityNotFoundError("Translation not found")
+
         if result.status != StatusType.PENDING:
             raise TranslationNotPendingError()
-        content = file_get_content(result.article.content_path)
+
+        content = get_content(result.article.content_path)
+
         return self.chat_gpt_service.get_translation(
             ChatGptContentTranslationDTO.from_entity(result, content)
         )
