@@ -9,7 +9,7 @@ class TestGetTranslationByLanguage:
     def test_when_language_not_found(self, api_service: ApiService) -> None:
         with pytest.raises(EntityNotFoundError) as e:
             api_service.get_translations_by_language(999)
-        assert 'Language not found' == str(e.value)
+        assert "Language not found" == str(e.value)
 
     def test_when_found(self, api_service: ApiService) -> None:
         language = LanguageFactory()

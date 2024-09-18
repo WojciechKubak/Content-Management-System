@@ -1,5 +1,3 @@
-
-
 class ChatGptServiceError(Exception):
 
     def __init__(self, message="Chat GPT service error"):

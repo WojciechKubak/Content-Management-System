@@ -1,9 +1,15 @@
-from translations.persistance.entity import Language, Article, Translation, StatusType, sa
+from translations.persistance.entity import (
+    Language,
+    Article,
+    Translation,
+    StatusType,
+    sa,
+)
 from translations.broker.dto import (
-    LanguageEventDTO, 
-    LanguageEventType, 
+    LanguageEventDTO,
+    LanguageEventType,
     ArticleTranslationRequestDTO,
-    ArticleTranslationDTO
+    ArticleTranslationDTO,
 )
 from factory import Sequence, SubFactory, Factory
 from factory.alchemy import SQLAlchemyModelFactory
@@ -17,8 +23,8 @@ class LanguageFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = sa.session
 
     id = Sequence(lambda n: n + 1)
-    name = 'english'
-    code = 'EN'
+    name = "english"
+    code = "EN"
 
 
 class ArticleFactory(SQLAlchemyModelFactory):
@@ -28,8 +34,8 @@ class ArticleFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = sa.session
 
     id = Sequence(lambda n: n + 1)
-    title = 'Article title'
-    content_path = 'subfolder/article_content.txt'
+    title = "Article title"
+    content_path = "subfolder/article_content.txt"
 
 
 class TranslationFactory(SQLAlchemyModelFactory):
@@ -40,21 +46,21 @@ class TranslationFactory(SQLAlchemyModelFactory):
 
     id = Sequence(lambda n: n + 1)
     article = SubFactory(ArticleFactory)
-    title='Translated article title'
-    content_path='subfolder/translation_content.txt'
+    title = "Translated article title"
+    content_path = "subfolder/translation_content.txt"
     language = SubFactory(LanguageFactory)
     requested_at = datetime.now()
     status = StatusType.PENDING
 
 
 class LanguageEventDTOFactory(Factory):
-    
+
     class Meta:
         model = LanguageEventDTO
 
     id_ = Sequence(lambda n: n + 1)
-    name = 'English'
-    code = 'EN'
+    name = "English"
+    code = "EN"
     event_type = LanguageEventType.CREATE
 
 
@@ -64,8 +70,8 @@ class ArticleTranslationRequestDTOFactory(Factory):
         model = ArticleTranslationRequestDTO
 
     id_ = Sequence(lambda n: n + 1)
-    title = 'Article title'
-    content_path = 'subfolder/article_content.txt'
+    title = "Article title"
+    content_path = "subfolder/article_content.txt"
     language_id = Sequence(lambda n: n + 1)
     date = datetime.now()
 
@@ -77,6 +83,6 @@ class ArticleTranslationDTOFactory(Factory):
 
     id_ = Sequence(lambda n: n + 1)
     language_id = Sequence(lambda n: n + 1)
-    title = 'Article title'
-    content_path = 'subfolder/article_content.txt'
+    title = "Article title"
+    content_path = "subfolder/article_content.txt"
     translator_id = Sequence(lambda n: n + 1)

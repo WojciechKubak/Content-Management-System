@@ -18,4 +18,7 @@ class TestSaveOrUpdate:
 
         language_repository.save_or_update(language)
 
-        assert sa.session.query(Language).filter_by(id=language.id).first().code == updated_code
+        assert (
+            sa.session.query(Language).filter_by(id=language.id).first().code
+            == updated_code
+        )

@@ -18,4 +18,7 @@ class TestSaveOrUpdate:
 
         article_repository.save_or_update(article)
 
-        assert sa.session.query(Article).filter_by(id=article.id).first().title == updated_title
+        assert (
+            sa.session.query(Article).filter_by(id=article.id).first().title
+            == updated_title
+        )

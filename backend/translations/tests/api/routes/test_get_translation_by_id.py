@@ -8,15 +8,19 @@ class TestGetTranslationById:
 
     def test_when_translation_not_found(self, client: Client) -> None:
         response = client.get(
-            url_for('translations.get_translation_by_id', translation_id=999))
+            url_for("translations.get_translation_by_id", translation_id=999)
+        )
         assert 400 == response.status_code
-        assert { 'message': EntityNotFoundError('Translation not found').message } == response.json
+        assert {
+            "message": EntityNotFoundError("Translation not found").message
+        } == response.json
 
     def test_when_translation_found(self, client: Client) -> None:
         translation = TranslationFactory()
 
         response = client.get(
-            url_for('translations.get_translation_by_id', translation_id=translation.id))
+            url_for("translations.get_translation_by_id", translation_id=translation.id)
+        )
 
         assert 200 == response.status_code
-        assert translation.id == response.json['id']
+        assert translation.id == response.json["id"]

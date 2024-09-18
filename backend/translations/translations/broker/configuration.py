@@ -3,14 +3,14 @@ from translations.broker.kafka import KafkaService
 from translations.broker.consumer import EventConsumerService
 from translations.storage.configuration import boto3_service
 from translations.persistance.repository import (
-    language_repository, 
-    translation_repository, 
-    article_repository
+    language_repository,
+    translation_repository,
+    article_repository,
 )
 
 kafka_service = KafkaService(BROKER_URI, GROUP_ID)
 consumer_handler_service = EventConsumerService(
-    language_repository, 
+    language_repository,
     translation_repository,
     article_repository,
     boto3_service,

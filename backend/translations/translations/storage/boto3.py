@@ -20,9 +20,10 @@ class Boto3Service:
 
     def __post_init__(self):
         """Initializes the Boto3Service with the provided AWS credentials."""
-        self.s3 = boto3.client('s3',
+        self.s3 = boto3.client(
+            "s3",
             aws_access_key_id=self.access_key_id,
-            aws_secret_access_key=self.secret_access_key
+            aws_secret_access_key=self.secret_access_key,
         )
 
     def upload_to_txt_file(self, content: str, subfolder_name: str) -> str:
@@ -37,11 +38,7 @@ class Boto3Service:
             str: The path of the newly created file in the S3 bucket.
         """
         file_path = f"{subfolder_name}/{uuid.uuid4().hex}.txt"
-        self.s3.put_object(
-            Body=content,
-            Bucket=self.bucket_name,
-            Key=file_path
-        )
+        self.s3.put_object(Body=content, Bucket=self.bucket_name, Key=file_path)
         return file_path
 
     def update_file_content(self, file_path: str, new_content: str) -> None:
@@ -52,11 +49,7 @@ class Boto3Service:
             file_path (str): The path of the file in the S3 bucket.
             new_content (str): The new content to be written to the file.
         """
-        self.s3.put_object(
-            Body=new_content,
-            Bucket=self.bucket_name,
-            Key=file_path
-        )
+        self.s3.put_object(Body=new_content, Bucket=self.bucket_name, Key=file_path)
 
     def delete_file(self, file_path: str) -> None:
         """
@@ -65,11 +58,8 @@ class Boto3Service:
         Args:
             file_path (str): The path of the file in the S3 bucket.
         """
-        self.s3.delete_object(
-            Bucket=self.bucket_name,
-            Key=file_path
-        )
-    
+        self.s3.delete_object(Bucket=self.bucket_name, Key=file_path)
+
     def read_file_content(self, file_path: str) -> str:
         """
         Reads the content of a file from the S3 bucket.
@@ -80,8 +70,5 @@ class Boto3Service:
         Returns:
             str: The content of the file.
         """
-        response = self.s3.get_object(
-            Bucket=self.bucket_name,
-            Key=file_path
-        )
-        return response['Body'].read().decode('utf-8')
+        response = self.s3.get_object(Bucket=self.bucket_name, Key=file_path)
+        return response["Body"].read().decode("utf-8")

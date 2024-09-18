@@ -7,9 +7,10 @@ from enum import Enum
 
 class LanguageEventType(Enum):
     """An enumeration representing the types of events that can occur to a Language."""
-    CREATE = 'CREATE'
-    UPDATE = 'UPDATE'
-    DELETE = 'DELETE'
+
+    CREATE = "CREATE"
+    UPDATE = "UPDATE"
+    DELETE = "DELETE"
 
 
 @dataclass
@@ -36,11 +37,7 @@ class LanguageEventDTO:
         Returns:
             Language: The converted Language entity.
         """
-        return Language(
-            id=self.id_,
-            name=self.name,
-            code=self.code
-        )
+        return Language(id=self.id_, name=self.name, code=self.code)
 
     @classmethod
     def from_dto(cls, data: dict[str, Any]) -> Self:
@@ -54,10 +51,10 @@ class LanguageEventDTO:
             LanguageEventDTO: The created LanguageEventDTO.
         """
         return cls(
-            id_=data['id'],
-            name=data['name'],
-            code=data['code'],
-            event_type=LanguageEventType(data['event_type'].upper())
+            id_=data["id"],
+            name=data["name"],
+            code=data["code"],
+            event_type=LanguageEventType(data["event_type"].upper()),
         )
 
 
@@ -87,12 +84,8 @@ class ArticleTranslationRequestDTO:
         Returns:
             Article: The converted Article entity.
         """
-        return Article(
-            id=self.id_,
-            title=self.title,
-            content_path=self.content_path
-        )
-    
+        return Article(id=self.id_, title=self.title, content_path=self.content_path)
+
     def to_translation_entity(self) -> Translation:
         """
         Converts the DTO to a Translation entity.
@@ -101,11 +94,9 @@ class ArticleTranslationRequestDTO:
             Translation: The converted Translation entity.
         """
         return Translation(
-            article_id=self.id_,
-            requested_at=self.date,
-            language_id=self.language_id
+            article_id=self.id_, requested_at=self.date, language_id=self.language_id
         )
-    
+
     @classmethod
     def from_dto(cls, data: dict[str, Any]) -> Self:
         """
@@ -118,11 +109,11 @@ class ArticleTranslationRequestDTO:
             ArticleTranslationRequestDTO: The created ArticleTranslationRequestDTO.
         """
         return cls(
-            id_=data['id'],
-            title=data['title'],
-            content_path=data['content_path'],
-            language_id=data['language_id'],
-            date=data['date']
+            id_=data["id"],
+            title=data["title"],
+            content_path=data["content_path"],
+            language_id=data["language_id"],
+            date=data["date"],
         )
 
 
@@ -153,11 +144,11 @@ class ArticleTranslationDTO:
             dict[str, Any]: The converted dictionary.
         """
         return {
-            'id': self.id_,
-            'language_id': self.language_id,
-            'title': self.title,
-            'content_path': self.content_path,
-            'translator_id': self.translator_id
+            "id": self.id_,
+            "language_id": self.language_id,
+            "title": self.title,
+            "content_path": self.content_path,
+            "translator_id": self.translator_id,
         }
 
     @classmethod
@@ -176,5 +167,5 @@ class ArticleTranslationDTO:
             language_id=entity.language_id,
             title=entity.title,
             content_path=entity.content_path,
-            translator_id=entity.translator_id
+            translator_id=entity.translator_id,
         )

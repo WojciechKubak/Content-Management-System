@@ -28,11 +28,13 @@ class KafkaService:
             topic_name (str): The name of the Kafka topic.
             dto_class (Type): The DTO class to be serialized and sent as a message.
         """
-        producer = Producer({'bootstrap.servers': self.bootstrap_servers})
-        producer.produce(topic_name, json.dumps(dto_class.to_dict()).encode('utf-8'))
+        producer = Producer({"bootstrap.servers": self.bootstrap_servers})
+        producer.produce(topic_name, json.dumps(dto_class.to_dict()).encode("utf-8"))
         producer.flush()
 
-    def consume_messages(self, topic_name: str, handler: Callable[[Type], None], dto_class: Type) -> None:
+    def consume_messages(
+        self, topic_name: str, handler: Callable[[Type], None], dto_class: Type
+    ) -> None:
         """
         Consumes messages from a Kafka topic.
 
@@ -47,11 +49,13 @@ class KafkaService:
         Note:
             This method runs an infinite loop and should be run in a separate thread or process.
         """
-        consumer = Consumer({
-            'bootstrap.servers': self.bootstrap_servers,
-            'group.id': self.group_id,
-            'auto.offset.reset': 'earliest'
-        })
+        consumer = Consumer(
+            {
+                "bootstrap.servers": self.bootstrap_servers,
+                "group.id": self.group_id,
+                "auto.offset.reset": "earliest",
+            }
+        )
         consumer.subscribe([topic_name])
 
         logging.info(f"Consuming messages from topic: {topic_name}")
@@ -65,10 +69,10 @@ class KafkaService:
             if msg.error():
                 logging.info(f"Consumer error: {msg.error()}")
                 continue
-            
-            data = json.loads(msg.value().decode('utf-8'))
+
+            data = json.loads(msg.value().decode("utf-8"))
             logging.info(f"Received message: {data}")
-            
+
             try:
                 handler(dto_class.from_dto(data))
                 logging.info("Successfully handled")

@@ -1,10 +1,16 @@
-from translations.persistance.repository import LanguageRepository, TranslationRepository
+from translations.persistance.repository import (
+    LanguageRepository,
+    TranslationRepository,
+)
 from translations.api.dto import TranslationDTO, ListTranslationDTO
 from translations.persistance.entity import StatusType
 from translations.storage.boto3 import Boto3Service
 from translations.broker.kafka import KafkaService
 from translations.gpt.chat_gpt import ChatGPTService
-from translations.gpt.dto import ChatGptTitleTranslationDTO, ChatGptContentTranslationDTO
+from translations.gpt.dto import (
+    ChatGptTitleTranslationDTO,
+    ChatGptContentTranslationDTO,
+)
 from translations.broker.dto import ArticleTranslationDTO
 from translations.api.exceptions import (
     EntityNotFoundError,
@@ -12,7 +18,7 @@ from translations.api.exceptions import (
     InvalidRedactorIdError,
     InvalidStatusOperationError,
     TranslationAlreadyReleasedError,
-    TranslationNotPendingError
+    TranslationNotPendingError,
 )
 from dataclasses import dataclass
 
@@ -55,16 +61,19 @@ class ApiService:
         """
         translation = self.translation_repository.find_by_id(translation_id)
         if not translation:
-            raise EntityNotFoundError('Translation not found')
-        return TranslationDTO \
-            .from_entity(translation) \
-            .with_contents(
-                self.storage_service.read_file_content(translation.article.content_path),
+            raise EntityNotFoundError("Translation not found")
+        return TranslationDTO.from_entity(translation).with_contents(
+            self.storage_service.read_file_content(translation.article.content_path),
+            (
                 self.storage_service.read_file_content(translation.content_path)
-                if translation.content_path else None
-            )
+                if translation.content_path
+                else None
+            ),
+        )
 
-    def get_translations_by_language(self, language_id: int) -> list[ListTranslationDTO]:
+    def get_translations_by_language(
+        self, language_id: int
+    ) -> list[ListTranslationDTO]:
         """
         Retrieves all translations for a specific language.
 
@@ -78,7 +87,7 @@ class ApiService:
             EntityNotFoundError: If the language is not found.
         """
         if not self.language_repository.find_by_id(language_id):
-            raise EntityNotFoundError('Language not found')
+            raise EntityNotFoundError("Language not found")
         result = self.translation_repository.find_by_language(language_id)
         return [ListTranslationDTO.from_entity(translation) for translation in result]
 
@@ -92,7 +101,9 @@ class ApiService:
         result = self.translation_repository.find_all()
         return [ListTranslationDTO.from_entity(translation) for translation in result]
 
-    def change_translation_content(self, translation_id: int, new_content: str) -> TranslationDTO:
+    def change_translation_content(
+        self, translation_id: int, new_content: str
+    ) -> TranslationDTO:
         """
         Changes the content of a translation.
 
@@ -112,24 +123,25 @@ class ApiService:
             raise MissingDataError()
         result = self.translation_repository.find_by_id(translation_id)
         if not result:
-            raise EntityNotFoundError('Translation not found')
+            raise EntityNotFoundError("Translation not found")
         if result.status != StatusType.PENDING:
             raise TranslationNotPendingError()
         if result.content_path:
             self.storage_service.update_file_content(result.content_path, new_content)
         else:
             result.content_path = self.storage_service.upload_to_txt_file(
-                new_content,
-                self.translations_subfolder
+                new_content, self.translations_subfolder
             )
             self.translation_repository.save_or_update(result)
 
-        return TranslationDTO.from_entity(result) \
-            .with_contents(
-                self.storage_service.read_file_content(result.article.content_path),
-                new_content)
-    
-    def change_translation_title(self, translation_id: int, new_title: str) -> TranslationDTO:
+        return TranslationDTO.from_entity(result).with_contents(
+            self.storage_service.read_file_content(result.article.content_path),
+            new_content,
+        )
+
+    def change_translation_title(
+        self, translation_id: int, new_title: str
+    ) -> TranslationDTO:
         """
         Changes the title of a translation.
 
@@ -149,21 +161,25 @@ class ApiService:
             raise MissingDataError()
         result = self.translation_repository.find_by_id(translation_id)
         if not result:
-            raise EntityNotFoundError('Translation not found')
+            raise EntityNotFoundError("Translation not found")
         if result.status != StatusType.PENDING:
             raise TranslationNotPendingError()
-        
+
         result.title = new_title
         self.translation_repository.save_or_update(result)
 
-        return TranslationDTO.from_entity(result). \
-            with_contents(
-                self.storage_service.read_file_content(result.article.content_path),
+        return TranslationDTO.from_entity(result).with_contents(
+            self.storage_service.read_file_content(result.article.content_path),
+            (
                 self.storage_service.read_file_content(result.content_path)
-                if result.content_path else None
+                if result.content_path
+                else None
+            ),
         )
-    
-    def change_translation_status(self, translation_id: int, status_type: str, redactor_id: int) -> ListTranslationDTO:
+
+    def change_translation_status(
+        self, translation_id: int, status_type: str, redactor_id: int
+    ) -> ListTranslationDTO:
         """
         Changes the status of a translation.
 
@@ -183,14 +199,14 @@ class ApiService:
         """
         result = self.translation_repository.find_by_id(translation_id)
         if not result:
-            raise EntityNotFoundError('Translation not found')
+            raise EntityNotFoundError("Translation not found")
         if redactor_id <= 0:
             raise InvalidRedactorIdError()
         if status_type.upper() not in StatusType.__members__:
             raise InvalidStatusOperationError()
         if result.status == StatusType.RELEASED:
             raise TranslationAlreadyReleasedError()
-        
+
         match StatusType[status_type.upper()]:
 
             case StatusType.REQUESTED:
@@ -208,13 +224,13 @@ class ApiService:
                 result.status = StatusType.RELEASED
                 self.kafka_service.produce_message(
                     self.translated_articles_topic,
-                    ArticleTranslationDTO.from_entity(result)
+                    ArticleTranslationDTO.from_entity(result),
                 )
 
             case StatusType.REJECTED:
                 result.status = StatusType.REJECTED
                 result.translator_id = None
-            
+
         self.translation_repository.save_or_update(result)
         return ListTranslationDTO.from_entity(result)
 
@@ -234,7 +250,7 @@ class ApiService:
         """
         result = self.translation_repository.find_by_id(translation_id)
         if not result:
-            raise EntityNotFoundError('Translation not found')
+            raise EntityNotFoundError("Translation not found")
         if result.status != StatusType.PENDING:
             raise TranslationNotPendingError()
         return self.chat_gpt_service.get_translation(
@@ -257,7 +273,7 @@ class ApiService:
         """
         result = self.translation_repository.find_by_id(translation_id)
         if not result:
-            raise EntityNotFoundError('Translation not found')
+            raise EntityNotFoundError("Translation not found")
         if result.status != StatusType.PENDING:
             raise TranslationNotPendingError()
         content = self.storage_service.read_file_content(result.article.content_path)

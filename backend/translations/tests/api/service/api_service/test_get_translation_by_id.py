@@ -9,7 +9,7 @@ class TestGetTranslationById:
     def test_when_no_translation(self, api_service: ApiService) -> None:
         with pytest.raises(EntityNotFoundError) as e:
             api_service.get_translation_by_id(999)
-        assert 'Translation not found' == str(e.value)        
+        assert "Translation not found" == str(e.value)
 
     def test_when_found(self, api_service: ApiService) -> None:
         translation = TranslationFactory()

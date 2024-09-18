@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
-    
+
 @dataclass
 class CrudRepository[T](ABC):
     """
@@ -138,9 +138,13 @@ class TranslationRepository(CrudRepositoryORM[Translation]):
         Returns:
             list[Translation]: A list of Translation objects associated with the language.
         """
-        return self.sa.session.query(Translation).filter_by(language_id=language_id).all()
+        return (
+            self.sa.session.query(Translation).filter_by(language_id=language_id).all()
+        )
 
-    def find_by_language_and_article(self, language_id: int, article_id: int) -> Translation:
+    def find_by_language_and_article(
+        self, language_id: int, article_id: int
+    ) -> Translation:
         """
         Retrieves a translation associated with a specific language and article.
 
@@ -151,9 +155,13 @@ class TranslationRepository(CrudRepositoryORM[Translation]):
         Returns:
             Translation: The Translation object associated with the language and article.
         """
-        return self.sa.session.query(Translation).filter_by(language_id=language_id) \
-            .filter_by(article_id=article_id).first()
-    
+        return (
+            self.sa.session.query(Translation)
+            .filter_by(language_id=language_id)
+            .filter_by(article_id=article_id)
+            .first()
+        )
+
     def find_by_status(self, status_type: StatusType) -> list[Translation]:
         """
         Retrieves all translations with a specific status.
@@ -170,12 +178,14 @@ class TranslationRepository(CrudRepositoryORM[Translation]):
 @dataclass
 class LanguageRepository(CrudRepositoryORM[Language]):
     """A repository class for interacting with Language entities."""
+
     pass
 
 
 @dataclass
 class ArticleRepository(CrudRepositoryORM[Article]):
     """A repository class for interacting with Article entities."""
+
     pass
 
 

@@ -6,6 +6,6 @@ def test_to_dict() -> None:
 
     result = dto.to_dict()
 
-    assert dto.id_ == result['id']
-    assert dto.language_id == result['language_id']
-    assert dto.translator_id == result['translator_id']
+    assert dto.id_ == result["id"]
+    assert dto.language_id == result["language_id"]
+    assert dto.translator_id == result["translator_id"]

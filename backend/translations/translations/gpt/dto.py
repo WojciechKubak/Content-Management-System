@@ -16,14 +16,14 @@ class ChatGptTitleTranslationDTO:
 
     text: str
     language: str
-    role: str = 'user'
+    role: str = "user"
 
     def __str__(self) -> str:
         """
         Returns a string representation of the translation request.
         """
         return f'Translate this title: "{self.text}" to {self.language} language'
-    
+
     @classmethod
     def from_entity(cls, translation: Translation) -> Self:
         """
@@ -35,10 +35,7 @@ class ChatGptTitleTranslationDTO:
         Returns:
             Self: A new instance of the class.
         """
-        return cls(
-            text=translation.article.title,
-            language=translation.language.name
-        )
+        return cls(text=translation.article.title, language=translation.language.name)
 
 
 @dataclass
@@ -54,14 +51,14 @@ class ChatGptContentTranslationDTO:
 
     text: str
     language: str
-    role: str = 'user'
+    role: str = "user"
 
     def __str__(self) -> str:
         """
         Returns a string representation of the translation request.
         """
         return f'Translate this content of article: "{self.text}" to {self.language} language, keep all tags as they are'
-    
+
     @classmethod
     def from_entity(cls, translation: Translation, content: str) -> Self:
         """
@@ -73,7 +70,4 @@ class ChatGptContentTranslationDTO:
         Returns:
             Self: A new instance of the class.
         """
-        return cls(
-            text=content,
-            language=translation.language.name
-        )
+        return cls(text=content, language=translation.language.name)

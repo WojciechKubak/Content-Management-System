@@ -33,7 +33,7 @@ def create_app(config: Config) -> Flask:
 
     with app.app_context():
 
-        @app.route('/health')
+        @app.route("/health")
         def health() -> Response:
             """
             Health check route.
@@ -41,6 +41,6 @@ def create_app(config: Config) -> Flask:
             Returns:
                 Response: A Flask Response object with a JSON containing a health check message.
             """
-            return make_response({'message': 'OK'}, 200)
+            return make_response({"message": "OK"}, 200)
 
         return app

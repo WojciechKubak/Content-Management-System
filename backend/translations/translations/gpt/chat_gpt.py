@@ -12,6 +12,7 @@ class ChatGPTService:
     Attributes:
         openai_api_key (str): The API key for OpenAI.
     """
+
     openai_api_key: str
 
     def __post_init__(self):
@@ -37,11 +38,11 @@ class ChatGPTService:
             response = self.client.chat.completions.create(
                 messages=[
                     {
-                        'role': translation_request_dto.role,
-                        'content': str(translation_request_dto)
+                        "role": translation_request_dto.role,
+                        "content": str(translation_request_dto),
                     }
                 ],
-                model='gpt-3.5-turbo'
+                model="gpt-3.5-turbo",
             )
             return response.choices[0].message.content
         except OpenAIError:

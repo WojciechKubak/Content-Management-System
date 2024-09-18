@@ -35,13 +35,13 @@ class TranslationDTO:
             dict[str, Any]: A dictionary representation of the TranslationDTO.
         """
         return {
-            'id': self.id_,
-            'original_title': self.original_title,
-            'original_content': self.original_content,
-            'translation_title': self.translation_title,
-            'translation_content': self.translation_content,
-            'language': self.language,
-            'status': self.status.value
+            "id": self.id_,
+            "original_title": self.original_title,
+            "original_content": self.original_content,
+            "translation_title": self.translation_title,
+            "translation_content": self.translation_content,
+            "language": self.language,
+            "status": self.status.value,
         }
 
     def with_contents(self, original_content: str, translation_content: str) -> Self:
@@ -103,6 +103,7 @@ class ListTranslationDTO:
         translator_id (int | None): The id of the translator. None if the translation is not yet assigned.
         requested_at (datetime): The time when the translation was requested.
     """
+
     id_: int
     original_title: str
     language: str
@@ -118,12 +119,12 @@ class ListTranslationDTO:
             dict[str, Any]: A dictionary representation of the ListTranslationDTO.
         """
         return {
-            'id': self.id_,
-            'original_title': self.original_title,
-            'language': self.language,
-            'status': self.status.value,
-            'translator_id': self.translator_id,
-            'requested_at': self.requested_at
+            "id": self.id_,
+            "original_title": self.original_title,
+            "language": self.language,
+            "status": self.status.value,
+            "translator_id": self.translator_id,
+            "requested_at": self.requested_at,
         }
 
     @classmethod
@@ -143,5 +144,5 @@ class ListTranslationDTO:
             language=entity.language.name,
             status=entity.status,
             translator_id=entity.translator_id,
-            requested_at=entity.requested_at
+            requested_at=entity.requested_at,
         )

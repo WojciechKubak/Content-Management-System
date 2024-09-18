@@ -18,5 +18,7 @@ class TestSaveOrUpdate:
 
         translation_repository.save_or_update(translation)
 
-        assert sa.session.query(Translation).filter_by(id=translation.id).first().title == updated_title
-    
+        assert (
+            sa.session.query(Translation).filter_by(id=translation.id).first().title
+            == updated_title
+        )
