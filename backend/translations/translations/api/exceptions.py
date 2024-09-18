@@ -38,10 +38,3 @@ class TranslationAlreadyReleasedError(Exception):
     def __init__(self, message="Translation already released"):
         self.message = message
         super().__init__(self.message)
-
-
-class InvalidStatusOperationError(Exception):
-
-    def __init__(self, message="Invalid status operation"):
-        self.message = message
-        super().__init__(self.message)
