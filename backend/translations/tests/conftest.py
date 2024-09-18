@@ -4,7 +4,7 @@ from translations.persistance.repository import (
     ArticleRepository,
 )
 from translations.broker.kafka import KafkaService
-from translations.storage.boto3 import Boto3Service
+from backend.translations.translations.storage.client import Boto3Service
 from translations.gpt.chat_gpt import ChatGPTService
 from translations.persistance.entity import sa
 from translations.app import create_app
@@ -51,13 +51,6 @@ def translation_repository() -> TranslationRepository:
 @pytest.fixture(scope="session")
 def language_repository() -> LanguageRepository:
     return LanguageRepository(sa)
-
-
-@pytest.fixture(scope="session")
-def boto3_service() -> Boto3Service:
-    mock = MagicMock(spec=Boto3Service)
-    mock.read_file_content.side_effect = lambda path: f"CONTENT OF {path}"
-    return mock
 
 
 @pytest.fixture(scope="session")
