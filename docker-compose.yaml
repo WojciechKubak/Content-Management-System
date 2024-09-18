@@ -12,6 +12,17 @@ services:
     networks:
       - cms
 
+  nginx_api_gateway:
+    image: nginx:latest
+    volumes:
+      - ./backend/api_gateway/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - api_gateway
+    networks:
+      - cms
+
   articles:
     build:
       context: ./backend/articles
@@ -26,6 +37,17 @@ services:
         condition: service_healthy
       db_test:
         condition: service_healthy
+    networks:
+      - cms
+
+  nginx_articles:
+    image: nginx:latest
+    volumes:
+      - ./backend/articles/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "81:81"
+    depends_on:
+      - articles
     networks:
       - cms
 
@@ -46,6 +68,17 @@ services:
     networks:
       - cms
 
+  nginx_translations:
+    image: nginx:latest
+    volumes:
+      - ./backend/translations/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "82:82"
+    depends_on:
+      - translations
+    networks:
+      - cms
+
   users:
     build:
       context: ./backend/users
@@ -60,6 +93,17 @@ services:
         condition: service_healthy
       db_test:
         condition: service_healthy
+    networks:
+      - cms
+
+  nginx_users:
+    image: nginx:latest
+    volumes:
+      - ./backend/users/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "83:83"
+    depends_on:
+      - users
     networks:
       - cms
 
@@ -96,17 +140,6 @@ services:
       - "3307:3307"
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
-    networks:
-      - cms
-
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./backend/default.conf:/etc/nginx/conf.d/default.conf
-    ports:
-      - "80:80"
-    depends_on:
-      - api_gateway
     networks:
       - cms
 
