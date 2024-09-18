@@ -24,6 +24,7 @@ coverage = "*"
 factory-boy = "*"
 flake8 = "*"
 black = "*"
+flake8-bugbear = "*"
 
 [requires]
 python_version = "3.12"
