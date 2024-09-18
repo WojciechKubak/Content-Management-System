@@ -23,6 +23,7 @@ pytest = "*"
 coverage = "*"
 factory-boy = "*"
 flake8 = "*"
+black = "*"
 
 [requires]
 python_version = "3.12"
