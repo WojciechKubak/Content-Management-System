@@ -1,12 +1,16 @@
 from dotenv import load_dotenv
+from pathlib import Path
 import os
-
 
 load_dotenv()
 
 
+PROJECT_ROOT: str = Path(__file__).resolve().parent.parent
+DEBUG_MODE: str = eval(os.environ.get("FLASK_DEBUG", "true").title())
+
+
 class Config(object):
-    SECRET_KEY = os.environ.get("SECRET_KEY", "secret-key")
+    SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "secret-key")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 

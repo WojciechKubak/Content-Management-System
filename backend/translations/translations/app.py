@@ -1,7 +1,7 @@
-from translations.translations.api.background_tasks import register_background_tasks
+from translations.api.background_tasks import register_background_tasks
 from translations.api.exception_handler import register_error_handler
 from translations.persistance.configuration import sa
-from translations.translations.api.translations import translations_bp
+from translations.api.translations import translations_bp
 from translations.config.config import Config
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, Response, make_response

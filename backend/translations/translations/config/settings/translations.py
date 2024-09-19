@@ -1,5 +1,5 @@
-from backend.translations.translations.enums.enums import TranslationType
-from config.env import env_to_enum
+from translations.enums.enums import TranslationType
+from translations.config.env import env_to_enum
 import os
 
 

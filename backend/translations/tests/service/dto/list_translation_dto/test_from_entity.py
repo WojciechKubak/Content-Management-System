@@ -1,5 +1,5 @@
 from tests.factory import TranslationFactory
-from backend.translations.translations.services.dtos import ListTranslationDTO
+from translations.services.dtos import ListTranslationDTO
 
 
 def test_from_entity() -> None:

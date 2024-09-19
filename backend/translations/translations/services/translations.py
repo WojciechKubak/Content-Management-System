@@ -4,7 +4,7 @@ from translations.persistance.repository import (
     translation_repository,
 )
 from translations.config.settings.storages import STORAGE_TYPE_STRATEGY
-from backend.translations.translations.enums.enums import StorageType
+from translations.enums.enums import StorageType
 from translations.integrations.aws.client import text_to_file_upload, file_get_content
 from translations.common.services import (
     text_to_local_file_upload,
@@ -12,7 +12,7 @@ from translations.common.services import (
     file_name_generate,
 )
 from translations.config.settings.translations import TRANSLATION_TYPE_STRATEGY
-from backend.translations.translations.enums.enums import TranslationType
+from translations.enums.enums import TranslationType
 from translations.common.services import content_get_local_translation
 from translations.integrations.gpt.client import (
     BaseTranslationRequest,
@@ -24,7 +24,7 @@ from translations.integrations.kafka.producer import (
     TranslationResponse,
     produce_message,
 )
-from backend.translations.translations.services.dtos import (
+from translations.services.dtos import (
     TranslationDTO,
     ListTranslationDTO,
 )

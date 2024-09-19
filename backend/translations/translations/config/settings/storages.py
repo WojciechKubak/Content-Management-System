@@ -1,5 +1,6 @@
-from backend.translations.translations.enums.enums import StorageType
-from config.env import BASE_DIR, env_to_enum
+from translations.enums.enums import StorageType
+from translations.config.config import PROJECT_ROOT
+from translations.config.env import env_to_enum
 import os
 
 
@@ -9,7 +10,7 @@ STORAGE_TYPE_STRATEGY: StorageType = env_to_enum(
 
 if STORAGE_TYPE_STRATEGY == StorageType.LOCAL:
     MEDIA_ROOT_NAME: str = "media"
-    MEDIA_ROOT: str = os.path.join(BASE_DIR, MEDIA_ROOT_NAME)
+    MEDIA_ROOT: str = os.path.join(PROJECT_ROOT, MEDIA_ROOT_NAME)
     MEDIA_URL: str = f"/{MEDIA_ROOT_NAME}/"
 
 if STORAGE_TYPE_STRATEGY == StorageType.S3:

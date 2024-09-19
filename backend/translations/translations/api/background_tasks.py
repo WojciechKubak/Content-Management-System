@@ -1,5 +1,5 @@
 from translations.config.settings.brokers import TRANSLATION_REQUESTS_TOPIC
-from backend.translations.translations.services.task_handlers import (
+from translations.services.task_handlers import (
     handle_translation_request,
 )
 from translations.integrations.kafka.consumer import (
