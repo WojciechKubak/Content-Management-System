@@ -3,22 +3,29 @@ from translations.persistance.repository import (
     TranslationRepository,
 )
 
-from translations.integrations.aws.client import text_to_file_upload, file_get_content
 from translations.config.settings.storages import STORAGE_TYPE_STRATEGY
-from translations.enums.storages import StorageType
+from backend.translations.translations.enums.enums import StorageType
+from translations.integrations.aws.client import text_to_file_upload, file_get_content
 from translations.common.services import (
     text_to_local_file_upload,
     file_get_local_content,
 )
 
+from translations.config.settings.translations import TRANSLATION_TYPE_STRATEGY
+from backend.translations.translations.enums.enums import TranslationType
+from translations.common.services import content_get_local_translation
+from translations.integrations.gpt.client import (
+    BaseTranslationRequest,
+    TitleTranslationRequest,
+    ContentTranslationRequest,
+    content_get_translation,
+)
+
+
 from translations.api.dto import TranslationDTO, ListTranslationDTO
 from translations.persistance.entity import StatusType
 from translations.broker.kafka import KafkaService
-from translations.gpt.chat_gpt import ChatGPTService
-from translations.gpt.dto import (
-    ChatGptTitleTranslationDTO,
-    ChatGptContentTranslationDTO,
-)
+
 from translations.broker.dto import ArticleTranslationDTO
 from translations.api.exceptions import (
     EntityNotFoundError,
@@ -31,18 +38,25 @@ from translations.api.exceptions import (
 from dataclasses import dataclass
 
 
-def get_content(file_path: str) -> str:
+def get_content(*, file_name: str) -> str:
     if STORAGE_TYPE_STRATEGY == StorageType.LOCAL:
-        return file_get_local_content(file_path)
+        return file_get_local_content(file_name=file_name)
     else:
-        return file_get_content(file_path)
+        return file_get_content(file_name=file_name)
 
 
-def file_upload(file_name: str, content: str) -> str:
+def file_upload(*, file_name: str, content: str) -> str:
     if STORAGE_TYPE_STRATEGY == STORAGE_TYPE_STRATEGY.LOCAL:
-        text_to_local_file_upload(file_name, content)
+        return text_to_local_file_upload(file_name=file_name, content=content)
     else:
-        text_to_file_upload(file_name, content)
+        return text_to_file_upload(file_name=file_name, content=content)
+
+
+def get_translation(*, request: type[BaseTranslationRequest]) -> str:
+    if TRANSLATION_TYPE_STRATEGY == TranslationType.LOCAL:
+        return content_get_local_translation(request.content, request.language)
+    else:
+        return content_get_translation(request=request)
 
 
 @dataclass
@@ -50,7 +64,6 @@ class ApiService:
     language_repository: LanguageRepository
     translation_repository: TranslationRepository
     kafka_service: KafkaService
-    chat_gpt_service: ChatGPTService
     translated_articles_topic: str
     translations_subfolder: str
 
@@ -59,9 +72,11 @@ class ApiService:
         if not translation:
             raise EntityNotFoundError("Translation not found")
 
-        original = get_content(translation.article.content_path)
+        original = get_content(file_name=translation.article.content_path)
         translated = (
-            get_content(translation.content_path) if translation.content_path else None
+            get_content(file_name=translation.content_path)
+            if translation.content_path
+            else None
         )
 
         return TranslationDTO.from_entity(translation).with_contents(
@@ -97,15 +112,17 @@ class ApiService:
 
         # todo: those conditions might be merged
         if result.content_path:
-            file_upload(result.content_path, new_content)
+            file_upload(file_name=result.content_path, content=new_content)
 
         else:
-            result.content_path = file_upload(new_content, self.translations_subfolder)
+            result.content_path = file_upload(
+                file_name=new_content, content=self.translations_subfolder
+            )
             self.translation_repository.save_or_update(result)
 
-        return TranslationDTO.from_entity(result).with_contents(
-            get_content(result.article.content_path), new_content
-        )
+        content = get_content(file_name=result.article.content_path)
+
+        return TranslationDTO.from_entity(result).with_contents(content, new_content)
 
     def change_translation_title(
         self, translation_id: int, new_title: str
@@ -125,8 +142,8 @@ class ApiService:
 
         # todo: this might get merged
         return TranslationDTO.from_entity(result).with_contents(
-            get_content(result.article.content_path),
-            get_content(result.content_path) if result.content_path else None,
+            get_content(file_name=result.article.content_path),
+            get_content(file_name=result.content_path) if result.content_path else None,
         )
 
     def change_translation_status(
@@ -183,8 +200,8 @@ class ApiService:
         if result.status != StatusType.PENDING:
             raise TranslationNotPendingError()
 
-        return self.chat_gpt_service.get_translation(
-            ChatGptTitleTranslationDTO.from_entity(result)
+        return get_translation(
+            request=TitleTranslationRequest(result.title, result.language)
         )
 
     def translate_content(self, translation_id: int) -> str:
@@ -196,8 +213,8 @@ class ApiService:
         if result.status != StatusType.PENDING:
             raise TranslationNotPendingError()
 
-        content = get_content(result.article.content_path)
+        content = get_content(file_name=result.article.content_path)
 
-        return self.chat_gpt_service.get_translation(
-            ChatGptContentTranslationDTO.from_entity(result, content)
+        return get_translation(
+            request=ContentTranslationRequest(content, result.language)
         )
