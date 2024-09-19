@@ -8,8 +8,8 @@ from translations.persistance.entity import (
 from translations.broker.dto import (
     LanguageEventDTO,
     LanguageEventType,
-    ArticleTranslationRequestDTO,
-    ArticleTranslationDTO,
+    TranslationRequest,
+    TranslationResponse,
 )
 from factory import Sequence, SubFactory, Factory
 from factory.alchemy import SQLAlchemyModelFactory
@@ -67,7 +67,7 @@ class LanguageEventDTOFactory(Factory):
 class ArticleTranslationRequestDTOFactory(Factory):
 
     class Meta:
-        model = ArticleTranslationRequestDTO
+        model = TranslationRequest
 
     id_ = Sequence(lambda n: n + 1)
     title = "Article title"
@@ -79,7 +79,7 @@ class ArticleTranslationRequestDTOFactory(Factory):
 class ArticleTranslationDTOFactory(Factory):
 
     class Meta:
-        model = ArticleTranslationDTO
+        model = TranslationResponse
 
     id_ = Sequence(lambda n: n + 1)
     language_id = Sequence(lambda n: n + 1)

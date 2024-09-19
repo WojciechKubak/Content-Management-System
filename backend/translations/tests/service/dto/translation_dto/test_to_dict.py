@@ -1,4 +1,4 @@
-from translations.api.dto import ListTranslationDTO
+from backend.translations.translations.services.dtos import TranslationDTO
 from translations.persistance.entity import StatusType
 
 
@@ -6,12 +6,13 @@ def test_to_dict() -> None:
     data = {
         "id_": 1,
         "original_title": "title",
+        "original_content": "content",
         "language": "language",
         "status": StatusType.PENDING,
-        "translator_id": 1,
-        "requested_at": "2021-01-01 00:00:00",
+        "translation_title": "translation_title",
+        "translation_content": "translation_content",
     }
-    result = ListTranslationDTO(**data).to_dict()
+    result = TranslationDTO(**data).to_dict()
 
     assert data["id_"] == result["id"]
     assert data["original_title"] == result["original_title"]

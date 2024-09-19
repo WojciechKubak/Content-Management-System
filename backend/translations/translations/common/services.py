@@ -1,4 +1,5 @@
 from translations.config.settings.storages import MEDIA_URL
+import uuid
 import os
 
 
@@ -22,3 +23,10 @@ def file_get_local_content(*, file_name: str) -> str:
 
 def content_get_local_translation(*, content: str, language: str) -> str:
     return f"{content[:10]}... to {language}"
+
+
+def file_name_generate(extension: str = ".txt") -> str:
+    unique_id = uuid.uuid4()
+    hex_filename = unique_id.hex
+
+    return f"{hex_filename}{extension}"

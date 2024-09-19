@@ -3,15 +3,11 @@ from translations.persistance.repository import (
     LanguageRepository,
     ArticleRepository,
 )
-from translations.broker.kafka import KafkaService
-from backend.translations.translations.storage.client import Boto3Service
-from translations.gpt.chat_gpt import ChatGPTService
 from translations.persistance.entity import sa
 from translations.app import create_app
 from translations.config import TestingConfig
 from flask import Flask
 from flask.testing import Client
-from unittest.mock import MagicMock
 from typing import Generator
 import pytest
 
@@ -51,17 +47,3 @@ def translation_repository() -> TranslationRepository:
 @pytest.fixture(scope="session")
 def language_repository() -> LanguageRepository:
     return LanguageRepository(sa)
-
-
-@pytest.fixture(scope="session")
-def kafka_service() -> KafkaService:
-    mock = MagicMock(spec=KafkaService)
-    mock.return_value = None
-    return mock
-
-
-@pytest.fixture(scope="session")
-def chat_gpt_service() -> ChatGPTService:
-    mock = MagicMock(spec=ChatGPTService)
-    mock.get_translation.side_effect = lambda dto: f"TRANSLATED {dto.text}"
-    return mock

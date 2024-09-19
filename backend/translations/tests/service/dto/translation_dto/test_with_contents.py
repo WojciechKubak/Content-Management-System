@@ -1,4 +1,4 @@
-from translations.api.dto import TranslationDTO
+from backend.translations.translations.services.dtos import TranslationDTO
 from translations.persistance.entity import StatusType
 
 

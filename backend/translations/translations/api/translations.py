@@ -169,16 +169,3 @@ def generate_content_translation(translation_id: int) -> Response:
         return make_response({"content": result}, 200)
     except (EntityNotFoundError, TranslationNotPendingError, ChatGptServiceError) as e:
         return make_response({"message": str(e)}, 400)
-
-
-@translations_bp.errorhandler(Exception)
-def handle_unrecognized_exception(_: Exception) -> Response:
-    """
-    Handle unrecognized exceptions.
-
-    Returns:
-        Response: A Flask Response object with a JSON containing an error message.
-    """
-    return make_response(
-        {"message": "An unexpected error occurred. Please try again later."}, 500
-    )

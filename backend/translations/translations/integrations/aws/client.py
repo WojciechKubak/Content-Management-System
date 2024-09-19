@@ -106,16 +106,3 @@ def file_get_content(*, file_name: str) -> str:
 
     except (BotoCoreError, ClientError):
         raise StorageError(f"Failed to get file {file_name}")
-
-
-# todo: we might also not need this
-def file_delete(*, file_name: str) -> None:
-    s3 = s3_get_client()
-    credentials = s3_get_credentials()
-
-    try:
-        # todo: create response class for this
-        s3.delete_object(Bucket=credentials.bucket_name, Key=file_name)
-
-    except (BotoCoreError, ClientError):
-        raise StorageError(f"Failed to delete file {file_name}")

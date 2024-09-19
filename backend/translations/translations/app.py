@@ -1,6 +1,6 @@
-from translations.broker.setup import setup_start_pooling
+from backend.translations.translations.api.background_tasks import setup_start_pooling
 from translations.persistance.configuration import sa
-from translations.api.routes import translations_bp
+from backend.translations.translations.api.translations import translations_bp
 from translations.config.config import Config
 from flask import Flask, Response, make_response
 from flask_executor import Executor
