@@ -47,7 +47,7 @@ def kafka_get_consumer() -> Consumer:
     )
 
 
-def consume_messages(
+def consumer_loop_start(
     topic_name: str,
     handler: Callable[[Type], None],
     translation_request: TranslationRequest,

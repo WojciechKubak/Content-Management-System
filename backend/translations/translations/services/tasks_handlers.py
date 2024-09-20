@@ -1,4 +1,6 @@
-from translations.integrations.kafka.consumer import TranslationRequest
+from translations.integrations.kafka.consumers import (
+    TranslationRequest,
+)
 from translations.persistance.repository import (
     language_repository,
     translation_repository,

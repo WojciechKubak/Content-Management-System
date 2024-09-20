@@ -1,12 +1,12 @@
 from translations.services.translations import (
-    get_translation_by_id,
-    get_translations_by_language,
-    get_all_translations,
-    change_translation_content,
-    change_translation_title,
-    change_translation_status,
-    translate_title,
-    translate_content,
+    translation_find_by_id,
+    translation_find_by_language,
+    translations_get_all,
+    translation_content_change,
+    translation_title_change,
+    translation_status_change,
+    title_prepare_translation,
+    content_prepare_translation,
 )
 from flask import Blueprint, Response, make_response, request
 
@@ -16,7 +16,7 @@ translations_bp = Blueprint("translations", __name__, url_prefix="/translations"
 
 @translations_bp.get("/")
 def translation_list() -> Response:
-    translations = get_all_translations()
+    translations = translations_get_all()
     return make_response(
         {"translations": [translation.to_dict() for translation in translations]}, 200
     )
@@ -24,13 +24,13 @@ def translation_list() -> Response:
 
 @translations_bp.get("/<int:translation_id>")
 def translation_detail_api_by_id(translation_id: int) -> Response:
-    translation = get_translation_by_id(translation_id=translation_id)
+    translation = translation_find_by_id(translation_id=translation_id)
     return make_response(translation.to_dict(), 200)
 
 
 @translations_bp.get("/language/<int:language_id>")
 def translation_detail_api_by_language(language_id: int) -> Response:
-    translations = get_translations_by_language(language_id=language_id)
+    translations = translation_find_by_language(language_id=language_id)
     return make_response(
         {"translations": [translation.to_dict() for translation in translations]},
         200,
@@ -40,7 +40,7 @@ def translation_detail_api_by_language(language_id: int) -> Response:
 @translations_bp.put("/<int:translation_id>/content")
 def translation_update_content(translation_id: int) -> Response:
     new_content = request.json.get("content")
-    updated_translation = change_translation_content(
+    updated_translation = translation_content_change(
         translation_id=translation_id, new_content=new_content
     )
     return make_response(updated_translation.to_dict(), 200)
@@ -49,7 +49,7 @@ def translation_update_content(translation_id: int) -> Response:
 @translations_bp.put("/<int:translation_id>/title")
 def translation_update_title(translation_id: int) -> Response:
     new_title = request.json.get("title")
-    updated_translation = change_translation_title(
+    updated_translation = translation_title_change(
         translation_id=translation_id, new_title=new_title
     )
     return make_response(updated_translation.to_dict(), 200)
@@ -59,7 +59,7 @@ def translation_update_title(translation_id: int) -> Response:
 def translation_update_status(translation_id: int) -> Response:
     status = request.json.get("status")
     redactor_id = request.json.get("redactor_id")
-    updated_translation = change_translation_status(
+    updated_translation = translation_status_change(
         translation_id=translation_id, status=status, redactor_id=redactor_id
     )
     return make_response(updated_translation.to_dict(), 200)
@@ -67,11 +67,11 @@ def translation_update_status(translation_id: int) -> Response:
 
 @translations_bp.post("/<int:translation_id>/translate/title")
 def title_generate_translation(translation_id: int) -> Response:
-    result = translate_title(translation_id=translation_id)
+    result = title_prepare_translation(translation_id=translation_id)
     return make_response({"title": result}, 200)
 
 
 @translations_bp.post("/<int:translation_id>/translate/content")
 def content_generate_translation(translation_id: int) -> Response:
-    result = translate_content(translation_id=translation_id)
+    result = content_prepare_translation(translation_id=translation_id)
     return make_response({"content": result}, 200)

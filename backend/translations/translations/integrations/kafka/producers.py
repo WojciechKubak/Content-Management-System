@@ -39,7 +39,7 @@ def kafka_get_producer() -> Producer:
     return Producer({"bootstrap.servers": credentials.boostrap_server})
 
 
-def produce_message(topic_name: str, translation_response: TranslationResponse) -> None:
+def message_produce(topic_name: str, translation_response: TranslationResponse) -> None:
     producer = kafka_get_producer()
     producer.produce(
         topic_name, json.dumps(translation_response.to_dict()).encode("utf-8")

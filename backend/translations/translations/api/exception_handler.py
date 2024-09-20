@@ -6,7 +6,7 @@ from translations.core.exceptions import (
 from flask import Flask, Response, make_response
 
 
-def register_error_handler(app: Flask) -> None:
+def error_handler_register(app: Flask) -> None:
 
     @app.errorhandler(Exception)
     def custom_exception_handler(exception: Exception) -> Response:

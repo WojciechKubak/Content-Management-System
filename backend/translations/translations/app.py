@@ -1,5 +1,5 @@
-from translations.api.background_tasks import register_background_tasks
-from translations.api.exception_handler import register_error_handler
+from translations.api.background_tasks import background_tasks_register
+from translations.api.exception_handler import error_handler_register
 from translations.persistance.configuration import sa
 from translations.api.translations import translations_bp
 from translations.config.config import Config
@@ -19,7 +19,7 @@ def create_app(config: Config) -> Flask:
 
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
-    register_error_handler(app)
+    error_handler_register(app)
 
     app.register_blueprint(translations_bp)
 
@@ -27,7 +27,7 @@ def create_app(config: Config) -> Flask:
     _ = Migrate(app, sa)
 
     executor = Executor(app)
-    register_background_tasks(app, executor)
+    background_tasks_register(app, executor)
 
     with app.app_context():
 

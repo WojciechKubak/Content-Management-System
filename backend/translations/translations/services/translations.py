@@ -20,9 +20,9 @@ from translations.integrations.gpt.client import (
     ContentTranslationRequest,
     content_get_translation,
 )
-from translations.integrations.kafka.producer import (
+from translations.integrations.kafka.producers import (
     TranslationResponse,
-    produce_message,
+    message_produce,
 )
 from translations.services.dtos import (
     TranslationDTO,
@@ -60,7 +60,7 @@ def get_translation(*, request: type[BaseTranslationRequest]) -> str:
         return content_get_translation(request=request)
 
 
-def get_translation_by_id(*, translation_id: int) -> TranslationDTO:
+def translation_find_by_id(*, translation_id: int) -> TranslationDTO:
     translation = translation_repository.find_by_id(translation_id)
     if not translation:
         raise ValidationError(TRANSLATION_NOT_FOUND_ERROR_MSG)
@@ -75,7 +75,7 @@ def get_translation_by_id(*, translation_id: int) -> TranslationDTO:
     return TranslationDTO.from_entity(translation).with_contents(original, translated)
 
 
-def get_translations_by_language(*, language_id: int) -> list[ListTranslationDTO]:
+def translation_find_by_language(*, language_id: int) -> list[ListTranslationDTO]:
     if not language_repository.find_by_id(language_id):
         raise ValidationError(LANGUAGE_NOT_FOUND_ERROR_MSG)
 
@@ -84,12 +84,12 @@ def get_translations_by_language(*, language_id: int) -> list[ListTranslationDTO
     return [ListTranslationDTO.from_entity(translation) for translation in result]
 
 
-def get_all_translations() -> list[ListTranslationDTO]:
+def translations_get_all() -> list[ListTranslationDTO]:
     result = translation_repository.find_all()
     return [ListTranslationDTO.from_entity(translation) for translation in result]
 
 
-def change_translation_content(
+def translation_content_change(
     *, translation_id: int, new_content: str
 ) -> TranslationDTO:
     if not new_content:
@@ -117,7 +117,7 @@ def change_translation_content(
     return TranslationDTO.from_entity(result).with_contents(content, new_content)
 
 
-def change_translation_title(*, translation_id: int, new_title: str) -> TranslationDTO:
+def translation_title_change(*, translation_id: int, new_title: str) -> TranslationDTO:
     if not new_title:
         raise ValidationError(MISSING_DATA_ERROR_MSG)
     result = translation_repository.find_by_id(translation_id)
@@ -138,7 +138,7 @@ def change_translation_title(*, translation_id: int, new_title: str) -> Translat
     )
 
 
-def change_translation_status(
+def translation_status_change(
     *, translation_id: int, status: str, redactor_id: int
 ) -> ListTranslationDTO:
     result = translation_repository.find_by_id(translation_id)
@@ -167,7 +167,7 @@ def change_translation_status(
 
         case Translation.StatusType.RELEASED:
             result.status = Translation.StatusType.RELEASED
-            produce_message(
+            message_produce(
                 TRANSLATED_ARTICLES_TOPIC,
                 TranslationResponse.from_entity(result),
             )
@@ -181,7 +181,7 @@ def change_translation_status(
     return ListTranslationDTO.from_entity(result)
 
 
-def translate_title(*, translation_id: int) -> str:
+def title_prepare_translation(*, translation_id: int) -> str:
     result = translation_repository.find_by_id(translation_id)
 
     if not result:
@@ -195,7 +195,7 @@ def translate_title(*, translation_id: int) -> str:
     )
 
 
-def translate_content(*, translation_id: int) -> str:
+def content_prepare_translation(*, translation_id: int) -> str:
     result = translation_repository.find_by_id(translation_id)
 
     if not result:
