@@ -1,4 +1,4 @@
-from translations.config.settings.brokers import TRANSLATION_REQUESTS_TOPIC
+from translations.config.config import TRANSLATION_REQUESTS_TOPIC
 from translations.services.task_handlers import (
     handle_translation_request,
 )

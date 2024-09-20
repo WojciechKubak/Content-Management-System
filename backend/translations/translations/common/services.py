@@ -1,4 +1,4 @@
-from translations.config.settings.storages import MEDIA_URL
+from translations.config.config import MEDIA_URL
 import uuid
 import os
 

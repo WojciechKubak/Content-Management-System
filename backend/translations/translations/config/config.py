@@ -1,12 +1,14 @@
 from dotenv import load_dotenv
-from pathlib import Path
 import os
 
 load_dotenv()
 
 
-PROJECT_ROOT: str = Path(__file__).resolve().parent.parent
 DEBUG_MODE: str = eval(os.environ.get("FLASK_DEBUG", "true").title())
+
+from translations.config.settings.brokers import *  # noqa
+from translations.config.settings.storages import *  # noqa
+from translations.config.settings.translations import *  # noqa
 
 
 class Config(object):

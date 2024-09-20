@@ -1,5 +1,5 @@
 from translations.enums.enums import StorageType
-from translations.config.config import PROJECT_ROOT
+from translations.config.env import PROJECT_ROOT
 from translations.config.env import env_to_enum
 import os
 

@@ -1,5 +1,9 @@
 from translations.core.exceptions import ConfigurationError
+from pathlib import Path
 from enum import Enum
+
+
+PROJECT_ROOT: str = Path(__file__).resolve().parent.parent
 
 
 def env_to_enum(enum_class: type[Enum], env: str | None) -> Enum:
