@@ -6,6 +6,11 @@ load_dotenv()
 
 DEBUG_MODE: str = eval(os.environ.get("FLASK_DEBUG", "true").title())
 
+DEFAULT_DEV_DATABASE_URI: str = (
+    "mysql://user:user1234@db_articles_translations:3307/db_1"
+)
+DEFAULT_TEST_DATABASE_URI: str = "mysql://user:user1234@localhost:3309/db_1"
+
 from translations.config.settings.brokers import *  # noqa
 from translations.config.settings.storages import *  # noqa
 from translations.config.settings.translations import *  # noqa
@@ -17,18 +22,22 @@ class Config(object):
 
 
 class DevelopmentConfig(Config):
-    DEBUG = False
-    TESTING = False
-    SQLALCHEMY_DATABASE_URI = "mysql://user:user1234@mysql-translations:3312/db_1"
+    DEBUG: bool = False
+    TESTING: bool = False
+    SQLALCHEMY_DATABASE_URI: str = DEFAULT_DEV_DATABASE_URI
 
 
 class ProductionConfig(Config):
-    DEBUG = False
-    TESTING = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get("PRODUCTION_DB_URI", "")
+    DEBUG: bool = False
+    TESTING: bool = False
+
+    @property
+    def SQLALCHEMY_DATABASE_URI(self) -> str:
+        env_db = os.environ.get("PRODUCTION_DB_URI")
+        return env_db if env_db else DEFAULT_DEV_DATABASE_URI
 
 
 class TestingConfig(Config):
-    DEBUG = True
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = "mysql://user:user1234@localhost:3313/db_test"
+    DEBUG: bool = True
+    TESTING: bool = True
+    SQLALCHEMY_DATABASE_URI: str = DEFAULT_TEST_DATABASE_URI
