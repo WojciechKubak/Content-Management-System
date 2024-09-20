@@ -7,7 +7,7 @@ load_dotenv()
 DEBUG_MODE: str = eval(os.environ.get("FLASK_DEBUG", "true").title())
 
 DEFAULT_DEV_DATABASE_URI: str = (
-    "mysql://user:user1234@db_articles_translations:3307/db_1"
+    "mysql://user:user1234@db_articles_translations:3306/db_1"
 )
 DEFAULT_TEST_DATABASE_URI: str = "mysql://user:user1234@localhost:3309/db_1"
 

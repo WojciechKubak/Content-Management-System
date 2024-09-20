@@ -117,7 +117,6 @@ services:
       MYSQL_DATABASE: db_1
       MYSQL_USER: user
       MYSQL_PASSWORD: user1234
-      MYSQL_TCP: 3306
     ports:
       - "3306:3306"
     healthcheck:
@@ -135,9 +134,8 @@ services:
       MYSQL_DATABASE: db_1
       MYSQL_USER: user
       MYSQL_PASSWORD: user1234
-      MYSQL_TCP: 3307
     ports:
-      - "3307:3307"
+      - "3307:3306"
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
     networks:
@@ -153,9 +151,8 @@ services:
       MYSQL_DATABASE: db_1
       MYSQL_USER: user
       MYSQL_PASSWORD: user1234
-      MYSQL_TCP: 3308
     ports:
-      - "3308:3308"
+      - "3308:3306"
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
     networks:
@@ -171,9 +168,8 @@ services:
       MYSQL_DATABASE: db_1
       MYSQL_USER: user
       MYSQL_PASSWORD: user1234
-      MYSQL_TCP: 3309
     ports:
-      - "3309:3309"
+      - "3309:3306"
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
     networks:

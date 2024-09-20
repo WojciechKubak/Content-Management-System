@@ -5,7 +5,7 @@ from translations.persistance.repository import (
 )
 from translations.persistance.entity import sa
 from translations.app import create_app
-from translations.config import TestingConfig
+from translations.config.config import TestingConfig
 from flask import Flask
 from flask.testing import Client
 from typing import Generator
