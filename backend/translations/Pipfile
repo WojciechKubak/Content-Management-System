@@ -16,6 +16,7 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask-executor = "*"
 boto3 = "*"
+pre-commit = "*"
 
 [dev-packages]
 moto = {version = "*", extras = ["all", "ec2", "s3"]}
