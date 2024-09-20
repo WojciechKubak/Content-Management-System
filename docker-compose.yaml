@@ -33,9 +33,9 @@ services:
     ports:
       - "8100:8100"
     depends_on:
-      db:
+      db_articles_translations:
         condition: service_healthy
-      db_test:
+      db_articles_translations_test:
         condition: service_healthy
     networks:
       - cms
@@ -61,9 +61,9 @@ services:
     ports:
       - "8200:8200"
     depends_on:
-      db:
+      db_articles_translations:
         condition: service_healthy
-      db_test:
+      db_articles_translations_test:
         condition: service_healthy
     networks:
       - cms
@@ -89,9 +89,9 @@ services:
     ports:
       - "8300:8300"
     depends_on:
-      db:
+      db_users:
         condition: service_healthy
-      db_test:
+      db_users_test:
         condition: service_healthy
     networks:
       - cms
@@ -107,10 +107,10 @@ services:
     networks:
       - cms
 
-  db:
+  db_users:
     image: mysql:latest
     volumes:
-      - db:/var/lib/mysql
+      - db_users:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -125,19 +125,55 @@ services:
     networks:
       - cms
 
-  db_test:
+  db_articles_translations:
     image: mysql:latest
     volumes:
-      - db_test:/var/lib/mysql
+      - db_articles_translations:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_test
+      MYSQL_DATABASE: db_1
       MYSQL_USER: user
       MYSQL_PASSWORD: user1234
-      MYSQL_TCP_PORT: 3307
+      MYSQL_TCP: 3307
     ports:
       - "3307:3307"
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+    networks:
+      - cms
+
+  db_users_test:
+    image: mysql:latest
+    volumes:
+      - db_users_test:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_1
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user1234
+      MYSQL_TCP: 3308
+    ports:
+      - "3308:3308"
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+    networks:
+      - cms
+
+  db_articles_translations_test:
+    image: mysql:latest
+    volumes:
+      - db_articles_translations_test:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_1
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user1234
+      MYSQL_TCP: 3309
+    ports:
+      - "3309:3309"
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
     networks:
@@ -211,6 +247,8 @@ networks:
   cms:
 
 volumes:
-  db:
-  db_test:
+  db_users:
+  db_users_test:
+  db_articles_translations:
+  db_articles_translations_test:
   nginx:
