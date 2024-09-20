@@ -1,5 +1,5 @@
-from translations.persistance.configuration import sa
-from sqlalchemy import Integer, String, ForeignKey, DateTime, func
+from translations.common.models import BaseModel
+from sqlalchemy import Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 from sqlalchemy import Enum as SQLAlchemyEnum
 from datetime import datetime
@@ -7,8 +7,6 @@ from enum import Enum
 
 
 class StatusType(Enum):
-    """An enumeration representing the status of a translation."""
-
     REQUESTED = "REQUESTED"
     PENDING = "PENDING"
     COMPLETED = "COMPLETED"
@@ -16,9 +14,7 @@ class StatusType(Enum):
     REJECTED = "REJECTED"
 
 
-class Language(sa.Model):
-    """A SQLAlchemy model representing a language."""
-
+class Language(BaseModel):
     __tablename__ = "languages"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -26,15 +22,8 @@ class Language(sa.Model):
     code: Mapped[str] = mapped_column(String(5))
     translations = relationship("Translation", back_populates="language")
 
-    created_at: Mapped[datetime] = mapped_column(default=func.utc_timestamp())
-    updated_at: Mapped[datetime] = mapped_column(
-        default=func.utc_timestamp(), onupdate=func.utc_timestamp()
-    )
 
-
-class Translation(sa.Model):
-    """A SQLAlchemy model representing a translation."""
-
+class Translation(BaseModel):
     __tablename__ = "translations"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -52,15 +41,8 @@ class Translation(sa.Model):
     article_id: Mapped[int] = mapped_column(ForeignKey("articles.id"), nullable=False)
     article: Mapped["Article"] = relationship("Article", back_populates="translations")
 
-    created_at: Mapped[datetime] = mapped_column(default=func.utc_timestamp())
-    updated_at: Mapped[datetime] = mapped_column(
-        default=func.utc_timestamp(), onupdate=func.utc_timestamp()
-    )
 
-
-class Article(sa.Model):
-    """A SQLAlchemy model representing a article."""
-
+class Article(BaseModel):
     __tablename__ = "articles"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -69,9 +51,4 @@ class Article(sa.Model):
 
     translations: Mapped[list[Translation]] = relationship(
         "Translation", back_populates="article"
-    )
-
-    created_at: Mapped[datetime] = mapped_column(default=func.utc_timestamp())
-    updated_at: Mapped[datetime] = mapped_column(
-        default=func.utc_timestamp(), onupdate=func.utc_timestamp()
     )

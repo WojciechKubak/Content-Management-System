@@ -1,6 +1,5 @@
-from sqlalchemy.orm import declarative_base
+from translations.common.models import BaseModel
 from flask_sqlalchemy import SQLAlchemy
 
 
-Base = declarative_base()
-sa = SQLAlchemy(model_class=Base)
+sa = SQLAlchemy(model_class=BaseModel)
