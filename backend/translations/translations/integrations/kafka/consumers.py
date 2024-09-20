@@ -1,4 +1,4 @@
-from translations.persistance.entity import Article, Translation
+from translations.db.entities import Article, Translation
 from translations.integrations.kafka.credentials import kafka_get_credentials
 from confluent_kafka import Consumer
 from typing import Callable, Type

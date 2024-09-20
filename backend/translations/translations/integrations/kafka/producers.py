@@ -1,5 +1,5 @@
 from translations.integrations.kafka.credentials import kafka_get_credentials
-from translations.persistance.entity import Translation
+from translations.db.entities import Translation
 from confluent_kafka import Producer
 from dataclasses import dataclass
 from typing import Self, Any

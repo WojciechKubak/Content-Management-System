@@ -1,5 +1,5 @@
-from translations.persistance.entity import Language, Article, Translation
-from translations.persistance.configuration import sa
+from translations.db.entities import Language, Article, Translation
+from translations.db.configuration import sa
 from faker import Faker
 from factory import Sequence, SubFactory
 from factory.alchemy import SQLAlchemyModelFactory

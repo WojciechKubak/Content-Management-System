@@ -1,7 +1,7 @@
 from translations.integrations.kafka.consumers import (
     TranslationRequest,
 )
-from translations.persistance.repository import (
+from translations.db.repositories import (
     language_repository,
     translation_repository,
     article_repository,

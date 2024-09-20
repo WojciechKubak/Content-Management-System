@@ -1,4 +1,4 @@
-from translations.persistance.entity import Translation
+from translations.db.entities import Translation
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Self, Any

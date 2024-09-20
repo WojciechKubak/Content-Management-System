@@ -1,5 +1,5 @@
 from translations.config.config import TRANSLATED_ARTICLES_TOPIC
-from translations.persistance.repository import (
+from translations.db.repositories import (
     language_repository,
     translation_repository,
 )
@@ -28,7 +28,7 @@ from translations.services.dtos import (
     TranslationDTO,
     ListTranslationDTO,
 )
-from translations.persistance.entity import Translation
+from translations.db.entities import Translation
 from translations.core.exceptions import ValidationError
 
 

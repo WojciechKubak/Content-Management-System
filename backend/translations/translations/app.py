@@ -1,6 +1,6 @@
 from translations.api.background_tasks import background_tasks_register
 from translations.api.exception_handler import error_handler_register
-from translations.persistance.configuration import sa
+from translations.db.configuration import sa
 from translations.api.translations import translations_bp
 from translations.config.config import Config
 from werkzeug.middleware.proxy_fix import ProxyFix

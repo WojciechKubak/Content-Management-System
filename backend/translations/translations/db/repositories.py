@@ -1,5 +1,5 @@
-from translations.persistance.entity import Language, Translation, Article
-from translations.persistance.configuration import sa
+from translations.db.entities import Language, Translation, Article
+from translations.db.configuration import sa
 from flask_sqlalchemy import SQLAlchemy
 from dataclasses import dataclass
 from abc import ABC, abstractmethod

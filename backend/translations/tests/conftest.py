@@ -1,5 +1,5 @@
 from translations.app import create_app
-from translations.persistance.configuration import sa
+from translations.db.configuration import sa
 from translations.config.config import TestingConfig
 from flask import Flask
 from flask.testing import Client
