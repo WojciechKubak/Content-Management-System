@@ -1,4 +1,4 @@
-from translations.persistance.entity import StatusType, Translation
+from translations.persistance.entity import Translation
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Self, Any
@@ -12,7 +12,7 @@ class TranslationDTO:
     translation_title: str | None
     translation_content: str | None
     language: str
-    status: StatusType
+    status: Translation.StatusType
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -54,7 +54,7 @@ class ListTranslationDTO:
     id_: int
     original_title: str
     language: str
-    status: StatusType
+    status: Translation.StatusType
     translator_id: int | None
     requested_at: datetime
 

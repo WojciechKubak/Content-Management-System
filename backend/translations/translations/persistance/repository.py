@@ -1,4 +1,4 @@
-from translations.persistance.entity import StatusType, Language, Translation, Article
+from translations.persistance.entity import Language, Translation, Article
 from translations.persistance.configuration import sa
 from flask_sqlalchemy import SQLAlchemy
 from dataclasses import dataclass
@@ -68,7 +68,7 @@ class TranslationRepository(CrudRepositoryORM[Translation]):
             .first()
         )
 
-    def find_by_status(self, status_type: StatusType) -> list[Translation]:
+    def find_by_status(self, status_type: Translation.StatusType) -> list[Translation]:
         return self.sa.session.query(Translation).filter_by(status=status_type).all()
 
 
