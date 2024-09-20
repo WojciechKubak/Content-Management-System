@@ -28,7 +28,7 @@ from translations.services.dtos import (
     TranslationDTO,
     ListTranslationDTO,
 )
-from translations.persistance.entity import StatusType
+from translations.persistance.entity import Translation
 from translations.core.exceptions import ValidationError
 
 
@@ -99,7 +99,7 @@ def change_translation_content(
     if not result:
         raise ValidationError(TRANSLATION_NOT_FOUND_ERROR_MSG)
 
-    if result.status != StatusType.PENDING:
+    if result.status != Translation.StatusType.PENDING:
         raise ValidationError(TRANSLATION_NOT_PENDING_ERROR_MSG)
 
     # todo: those conditions might be merged
@@ -125,7 +125,7 @@ def change_translation_title(*, translation_id: int, new_title: str) -> Translat
     if not result:
         raise ValidationError(TRANSLATION_NOT_FOUND_ERROR_MSG)
 
-    if result.status != StatusType.PENDING:
+    if result.status != Translation.StatusType.PENDING:
         raise ValidationError(TRANSLATION_NOT_PENDING_ERROR_MSG)
 
     result.title = new_title
@@ -139,41 +139,41 @@ def change_translation_title(*, translation_id: int, new_title: str) -> Translat
 
 
 def change_translation_status(
-    *, translation_id: int, status_type: str, redactor_id: int
+    *, translation_id: int, status: str, redactor_id: int
 ) -> ListTranslationDTO:
     result = translation_repository.find_by_id(translation_id)
     if not result:
         raise ValidationError(TRANSLATION_NOT_FOUND_ERROR_MSG)
 
     # todo: add this again
-    # if status_type.upper() not in StatusType.__members__:
+    # if status.upper() not in StatusType.__members__:
     #     raise InvalidStatusOperationError()
 
-    if result.status == StatusType.RELEASED:
+    if result.status == Translation.StatusType.RELEASED:
         raise ValidationError(TRANSLATION_ALREADY_RELEASED_ERROR_MSG)
 
-    match StatusType[status_type.upper()]:
+    match Translation.StatusType[status.upper()]:
 
-        case StatusType.REQUESTED:
+        case Translation.StatusType.REQUESTED:
             result.translator_id = None
-            result.status = StatusType.REQUESTED
+            result.status = Translation.StatusType.REQUESTED
 
-        case StatusType.PENDING:
+        case Translation.StatusType.PENDING:
             result.translator_id = redactor_id
-            result.status = StatusType.PENDING
+            result.status = Translation.StatusType.PENDING
 
-        case StatusType.COMPLETED:
-            result.status = StatusType.COMPLETED
+        case Translation.StatusType.COMPLETED:
+            result.status = Translation.StatusType.COMPLETED
 
-        case StatusType.RELEASED:
-            result.status = StatusType.RELEASED
+        case Translation.StatusType.RELEASED:
+            result.status = Translation.StatusType.RELEASED
             produce_message(
                 TRANSLATED_ARTICLES_TOPIC,
                 TranslationResponse.from_entity(result),
             )
 
-        case StatusType.REJECTED:
-            result.status = StatusType.REJECTED
+        case Translation.StatusType.REJECTED:
+            result.status = Translation.StatusType.REJECTED
             result.translator_id = None
 
     translation_repository.save_or_update(result)
@@ -187,7 +187,7 @@ def translate_title(*, translation_id: int) -> str:
     if not result:
         raise ValidationError(TRANSLATION_NOT_FOUND_ERROR_MSG)
 
-    if result.status != StatusType.PENDING:
+    if result.status != Translation.StatusType.PENDING:
         raise ValidationError(TRANSLATION_NOT_PENDING_ERROR_MSG)
 
     return get_translation(
@@ -201,7 +201,7 @@ def translate_content(*, translation_id: int) -> str:
     if not result:
         raise ValidationError(TRANSLATION_NOT_FOUND_ERROR_MSG)
 
-    if result.status != StatusType.PENDING:
+    if result.status != Translation.StatusType.PENDING:
         raise ValidationError(TRANSLATION_NOT_PENDING_ERROR_MSG)
 
     content = get_content(file_name=result.article.content_path)

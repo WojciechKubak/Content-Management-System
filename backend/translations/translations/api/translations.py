@@ -60,7 +60,7 @@ def translation_update_status(translation_id: int) -> Response:
     status = request.json.get("status")
     redactor_id = request.json.get("redactor_id")
     updated_translation = change_translation_status(
-        translation_id=translation_id, status_type=status, redactor_id=redactor_id
+        translation_id=translation_id, status=status, redactor_id=redactor_id
     )
     return make_response(updated_translation.to_dict(), 200)
 
