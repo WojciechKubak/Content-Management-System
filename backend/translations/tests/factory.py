@@ -1,19 +1,11 @@
-from translations.persistance.entity import (
-    Language,
-    Article,
-    Translation,
-    StatusType,
-    sa,
-)
-from translations.broker.dto import (
-    LanguageEventDTO,
-    LanguageEventType,
-    TranslationRequest,
-    TranslationResponse,
-)
-from factory import Sequence, SubFactory, Factory
+from translations.persistance.entity import Language, Article, Translation
+from translations.persistance.configuration import sa
+from faker import Faker
+from factory import Sequence, SubFactory
 from factory.alchemy import SQLAlchemyModelFactory
-from datetime import datetime
+
+
+fake = Faker()
 
 
 class LanguageFactory(SQLAlchemyModelFactory):
@@ -23,8 +15,9 @@ class LanguageFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = sa.session
 
     id = Sequence(lambda n: n + 1)
-    name = "english"
-    code = "EN"
+
+    name = fake.language_name()
+    code = fake.language_code()
 
 
 class ArticleFactory(SQLAlchemyModelFactory):
@@ -34,8 +27,9 @@ class ArticleFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = sa.session
 
     id = Sequence(lambda n: n + 1)
-    title = "Article title"
-    content_path = "subfolder/article_content.txt"
+
+    title = fake.sentence(nb_words=6)
+    content_path = fake.file_path(depth=2, category="text")
 
 
 class TranslationFactory(SQLAlchemyModelFactory):
@@ -45,44 +39,11 @@ class TranslationFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = sa.session
 
     id = Sequence(lambda n: n + 1)
+
     article = SubFactory(ArticleFactory)
-    title = "Translated article title"
-    content_path = "subfolder/translation_content.txt"
+
+    title = fake.sentence(nb_words=6)
+    content_path = fake.file_path(depth=2, category="text")
     language = SubFactory(LanguageFactory)
-    requested_at = datetime.now()
-    status = StatusType.PENDING
-
-
-class LanguageEventDTOFactory(Factory):
-
-    class Meta:
-        model = LanguageEventDTO
-
-    id_ = Sequence(lambda n: n + 1)
-    name = "English"
-    code = "EN"
-    event_type = LanguageEventType.CREATE
-
-
-class ArticleTranslationRequestDTOFactory(Factory):
-
-    class Meta:
-        model = TranslationRequest
-
-    id_ = Sequence(lambda n: n + 1)
-    title = "Article title"
-    content_path = "subfolder/article_content.txt"
-    language_id = Sequence(lambda n: n + 1)
-    date = datetime.now()
-
-
-class ArticleTranslationDTOFactory(Factory):
-
-    class Meta:
-        model = TranslationResponse
-
-    id_ = Sequence(lambda n: n + 1)
-    language_id = Sequence(lambda n: n + 1)
-    title = "Article title"
-    content_path = "subfolder/article_content.txt"
-    translator_id = Sequence(lambda n: n + 1)
+    requested_at = fake.date_time_this_year()
+    status = Translation.StatusType.PENDING

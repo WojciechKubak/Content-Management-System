@@ -1,10 +1,5 @@
-from translations.persistance.repository import (
-    TranslationRepository,
-    LanguageRepository,
-    ArticleRepository,
-)
-from translations.persistance.entity import sa
 from translations.app import create_app
+from translations.persistance.configuration import sa
 from translations.config.config import TestingConfig
 from flask import Flask
 from flask.testing import Client
@@ -32,18 +27,3 @@ def db_setup_and_teardown(app: Flask) -> Generator:
 
     with app.app_context():
         sa.drop_all()
-
-
-@pytest.fixture(scope="session")
-def article_repository() -> ArticleRepository:
-    return ArticleRepository(sa)
-
-
-@pytest.fixture(scope="session")
-def translation_repository() -> TranslationRepository:
-    return TranslationRepository(sa)
-
-
-@pytest.fixture(scope="session")
-def language_repository() -> LanguageRepository:
-    return LanguageRepository(sa)

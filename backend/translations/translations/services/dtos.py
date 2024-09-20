@@ -7,10 +7,13 @@ from typing import Self, Any
 @dataclass
 class TranslationDTO:
     id_: int
+
     original_title: str
     original_content: str
+
     translation_title: str | None
     translation_content: str | None
+
     language: str
     status: Translation.StatusType
 
@@ -52,10 +55,13 @@ class TranslationDTO:
 @dataclass
 class ListTranslationDTO:
     id_: int
+
     original_title: str
     language: str
     status: Translation.StatusType
+
     translator_id: int | None
+
     requested_at: datetime
 
     def to_dict(self) -> dict[str, Any]:
