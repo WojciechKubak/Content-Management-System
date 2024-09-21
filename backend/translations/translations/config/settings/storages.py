@@ -11,7 +11,6 @@ STORAGE_TYPE_STRATEGY: StorageType = env_to_enum(
 if STORAGE_TYPE_STRATEGY == StorageType.LOCAL:
     MEDIA_ROOT_NAME: str = "media"
     MEDIA_ROOT: str = os.path.join(PROJECT_ROOT, MEDIA_ROOT_NAME)
-    MEDIA_URL: str = f"/{MEDIA_ROOT_NAME}/"
 
 if STORAGE_TYPE_STRATEGY == StorageType.S3:
     AWS_S3_ACCESS_KEY_ID: str = os.getenv("AWS_S3_ACCESS_KEY_ID")
