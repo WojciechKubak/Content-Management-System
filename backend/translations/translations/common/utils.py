@@ -5,7 +5,7 @@ import os
 
 def assert_settings(required: list[str], error_prefix: str | None = None):
     present: list[str] = []
-    missing = dict[str, Any] = []
+    missing: dict[str, Any] = []
 
     for setting in required:
         if param := os.environ.get(setting):
