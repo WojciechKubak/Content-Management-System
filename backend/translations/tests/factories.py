@@ -1,15 +1,24 @@
 from translations.db.entities import Language, Article, Translation
+from translations.common.models import SimpleModel
 from translations.db.configuration import sa
-from faker import Faker
 from factory import Sequence, SubFactory
 from factory.alchemy import SQLAlchemyModelFactory
+from faker import Faker
 
 
 fake = Faker()
 
 
-class LanguageFactory(SQLAlchemyModelFactory):
+class SimpleModelFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = SimpleModel
+        sqlalchemy_session = sa.session
 
+    id = Sequence(lambda n: n + 1)
+    name = fake.name()
+
+
+class LanguageFactory(SQLAlchemyModelFactory):
     class Meta:
         model = Language
         sqlalchemy_session = sa.session
@@ -21,7 +30,6 @@ class LanguageFactory(SQLAlchemyModelFactory):
 
 
 class ArticleFactory(SQLAlchemyModelFactory):
-
     class Meta:
         model = Article
         sqlalchemy_session = sa.session
@@ -33,7 +41,6 @@ class ArticleFactory(SQLAlchemyModelFactory):
 
 
 class TranslationFactory(SQLAlchemyModelFactory):
-
     class Meta:
         model = Translation
         sqlalchemy_session = sa.session

@@ -1,6 +1,7 @@
 from translations.app import create_app
 from translations.db.configuration import sa
 from translations.config.config import TestingConfig
+from translations.db.repositories import TranslationRepository
 from flask import Flask
 from flask.testing import Client
 from typing import Generator
@@ -27,3 +28,8 @@ def db_setup_and_teardown(app: Flask) -> Generator:
 
     with app.app_context():
         sa.drop_all()
+
+
+@pytest.fixture(scope="session")
+def translation_repository() -> TranslationRepository:
+    return TranslationRepository(sa)
