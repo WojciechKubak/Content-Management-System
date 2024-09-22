@@ -1,7 +1,5 @@
 from translations.config.config import TRANSLATION_REQUESTS_TOPIC
-from translations.services.tasks_handlers import (
-    handle_translation_request,
-)
+from translations.services.handlers import handle_translation_request
 from translations.integrations.kafka.consumers import (
     TranslationRequest,
     consumer_loop_start,

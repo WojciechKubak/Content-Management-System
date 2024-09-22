@@ -16,6 +16,7 @@ TRANSLATION_ALREADY_EXISTS_ERROR_MSG: str = "Translation already exists"
 def handle_translation_request(
     translation_request: TranslationRequest,
 ) -> None:
+    # todo: make this kwarg arguments only
     if not language_repository.find_by_id(translation_request.language_id):
         raise ValidationError(LANGUAGE_NOT_FOUND_ERROR_MSG)
     if translation_repository.find_by_language_and_article(

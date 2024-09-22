@@ -1,6 +1,6 @@
 from translations.services.translations import (
     translation_find_by_id,
-    translation_find_by_language,
+    translations_find_by_language,
     translations_get_all,
     translation_content_change,
     translation_title_change,
@@ -30,7 +30,7 @@ def translation_detail_api_by_id(translation_id: int) -> Response:
 
 @translations_bp.get("/language/<int:language_id>")
 def translation_detail_api_by_language(language_id: int) -> Response:
-    translations = translation_find_by_language(language_id=language_id)
+    translations = translations_find_by_language(language_id=language_id)
     return make_response(
         {"translations": [translation.to_dict() for translation in translations]},
         200,

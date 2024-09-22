@@ -34,7 +34,6 @@ from translations.core.exceptions import ValidationError
 
 TRANSLATION_NOT_FOUND_ERROR_MSG: str = "Translation not found"
 LANGUAGE_NOT_FOUND_ERROR_MSG: str = "Language not found"
-MISSING_DATA_ERROR_MSG: str = "No data provided"
 TRANSLATION_NOT_PENDING_ERROR_MSG: str = "Translation is not pending"
 TRANSLATION_ALREADY_RELEASED_ERROR_MSG: str = "Translation is already released"
 
@@ -75,7 +74,7 @@ def translation_find_by_id(*, translation_id: int) -> TranslationDTO:
     return TranslationDTO.from_entity(translation).with_contents(original, translated)
 
 
-def translation_find_by_language(*, language_id: int) -> list[ListTranslationDTO]:
+def translations_find_by_language(*, language_id: int) -> list[ListTranslationDTO]:
     if not language_repository.find_by_id(language_id):
         raise ValidationError(LANGUAGE_NOT_FOUND_ERROR_MSG)
 
@@ -92,24 +91,19 @@ def translations_get_all() -> list[ListTranslationDTO]:
 def translation_content_change(
     *, translation_id: int, new_content: str
 ) -> TranslationDTO:
-    if not new_content:
-        raise ValidationError(MISSING_DATA_ERROR_MSG)
-
     result = translation_repository.find_by_id(translation_id)
+
     if not result:
         raise ValidationError(TRANSLATION_NOT_FOUND_ERROR_MSG)
 
     if result.status != Translation.StatusType.PENDING:
         raise ValidationError(TRANSLATION_NOT_PENDING_ERROR_MSG)
 
-    # todo: those conditions might be merged
     if result.content_path:
         file_upload(file_name=result.content_path, content=new_content)
-
     else:
-        result.content_path = file_upload(
-            file_name=file_name_generate(), content=new_content
-        )
+        file_name = file_name_generate()
+        result.content_path = file_upload(file_name=file_name, content=new_content)
         translation_repository.save_or_update(result)
 
     content = get_content(file_name=result.article.content_path)
@@ -118,8 +112,6 @@ def translation_content_change(
 
 
 def translation_title_change(*, translation_id: int, new_title: str) -> TranslationDTO:
-    if not new_title:
-        raise ValidationError(MISSING_DATA_ERROR_MSG)
     result = translation_repository.find_by_id(translation_id)
 
     if not result:
@@ -131,10 +123,12 @@ def translation_title_change(*, translation_id: int, new_title: str) -> Translat
     result.title = new_title
     translation_repository.save_or_update(result)
 
-    # todo: this might get merged
+    original_content = get_content(file_name=result.article.content_path)
+    translation_content = (
+        get_content(file_name=result.content_path) if result.content_path else None
+    )
     return TranslationDTO.from_entity(result).with_contents(
-        get_content(file_name=result.article.content_path),
-        get_content(file_name=result.content_path) if result.content_path else None,
+        original_content, translation_content
     )
 
 
@@ -142,12 +136,9 @@ def translation_status_change(
     *, translation_id: int, status: str, redactor_id: int
 ) -> ListTranslationDTO:
     result = translation_repository.find_by_id(translation_id)
+
     if not result:
         raise ValidationError(TRANSLATION_NOT_FOUND_ERROR_MSG)
-
-    # todo: add this again
-    # if status.upper() not in StatusType.__members__:
-    #     raise InvalidStatusOperationError()
 
     if result.status == Translation.StatusType.RELEASED:
         raise ValidationError(TRANSLATION_ALREADY_RELEASED_ERROR_MSG)
