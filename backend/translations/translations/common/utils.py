@@ -8,7 +8,7 @@ def assert_settings(required: list[str], error_prefix: str | None = None):
     missing: dict[str, Any] = []
 
     for setting in required:
-        if param := os.environ.get(setting):
+        if param := os.getenv(setting):
             present[setting] = param
         else:
             missing.append(setting)

@@ -1,4 +1,4 @@
-from translations.integrations.kafka.credentials import kafka_get_credentials
+from translations.config.config import BROKER_URI
 from translations.db.entities import Translation
 from confluent_kafka import Producer
 from dataclasses import dataclass
@@ -35,8 +35,7 @@ class TranslationResponse:
 
 
 def kafka_get_producer() -> Producer:
-    credentials = kafka_get_credentials()
-    return Producer({"bootstrap.servers": credentials.boostrap_server})
+    return Producer({"bootstrap.servers": BROKER_URI})
 
 
 def message_produce(topic_name: str, translation_response: TranslationResponse) -> None:

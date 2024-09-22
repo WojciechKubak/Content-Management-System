@@ -1,5 +1,5 @@
+from translations.config.config import BROKER_URI, GROUP_ID
 from translations.db.entities import Article, Translation
-from translations.integrations.kafka.credentials import kafka_get_credentials
 from confluent_kafka import Consumer
 from typing import Callable, Type
 from dataclasses import dataclass
@@ -37,11 +37,10 @@ class TranslationRequest:
 
 
 def kafka_get_consumer() -> Consumer:
-    credentials = kafka_get_credentials()
     return Consumer(
         {
-            "bootstrap.servers": credentials.boostrap_server,
-            "group.id": credentials.group_id,
+            "bootstrap.servers": BROKER_URI,
+            "group.id": GROUP_ID,
             "auto.offset.reset": "earliest",
         }
     )

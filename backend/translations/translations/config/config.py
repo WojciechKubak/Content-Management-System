@@ -11,7 +11,7 @@ DEFAULT_DEV_DATABASE_URI: str = (
 )
 DEFAULT_TEST_DATABASE_URI: str = "mysql://user:user1234@localhost:3309/db_1"
 
-from translations.config.settings.brokers import *  # noqa
+from translations.config.settings.messaging import *  # noqa
 from translations.config.settings.storages import *  # noqa
 from translations.config.settings.translations import *  # noqa
 

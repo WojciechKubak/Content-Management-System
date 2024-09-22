@@ -20,10 +20,7 @@ from translations.integrations.gpt.client import (
     ContentTranslationRequest,
     content_get_translation,
 )
-from translations.integrations.kafka.producers import (
-    TranslationResponse,
-    message_produce,
-)
+from translations.messaging.producers import TranslationResponse, message_produce
 from translations.services.dtos import (
     TranslationDTO,
     ListTranslationDTO,

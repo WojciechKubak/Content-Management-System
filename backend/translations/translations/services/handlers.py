@@ -1,6 +1,4 @@
-from translations.integrations.kafka.consumers import (
-    TranslationRequest,
-)
+from translations.messaging.consumers import TranslationRequest
 from translations.db.repositories import (
     language_repository,
     translation_repository,
