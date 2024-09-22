@@ -1,4 +1,4 @@
-from translations.services.handlers import (
+from translations.services.translations import (
     LANGUAGE_NOT_FOUND_ERROR_MSG,
     TRANSLATION_ALREADY_EXISTS_ERROR_MSG,
     ValidationError,

@@ -66,6 +66,30 @@ def mock_file_upload() -> Generator:
         yield mock
 
 
+@pytest.fixture(scope="function", autouse=True)
+def mock_message_produce() -> Generator:
+    with patch("translations.services.translations.message_produce") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_translation_repository() -> Generator:
+    with patch("translations.services.translations.translation_repository") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_language_repository() -> Generator:
+    with patch("translations.services.translations.language_repository") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_article_repository() -> Generator:
+    with patch("translations.services.translations.article_repository") as mock:
+        yield mock
+
+
 @pytest.fixture(scope="session")
 def translation_repository() -> TranslationRepository:
     return TranslationRepository(sa)

@@ -2,6 +2,7 @@ from translations.config.config import TRANSLATED_ARTICLES_TOPIC
 from translations.db.repositories import (
     language_repository,
     translation_repository,
+    article_repository,
 )
 from translations.config.config import STORAGE_TYPE_STRATEGY
 from translations.enums.enums import StorageType
@@ -21,6 +22,7 @@ from translations.integrations.gpt.client import (
     content_get_translation,
 )
 from translations.messaging.producers import TranslationResponse, message_produce
+from translations.messaging.consumers import TranslationRequest
 from translations.services.dtos import (
     TranslationDTO,
     ListTranslationDTO,
@@ -32,6 +34,7 @@ from translations.core.exceptions import ValidationError
 TRANSLATION_NOT_FOUND_ERROR_MSG: str = "Translation not found"
 LANGUAGE_NOT_FOUND_ERROR_MSG: str = "Language not found"
 TRANSLATION_NOT_PENDING_ERROR_MSG: str = "Translation is not pending"
+TRANSLATION_ALREADY_EXISTS_ERROR_MSG: str = "Translation already exists"
 TRANSLATION_ALREADY_RELEASED_ERROR_MSG: str = "Translation is already released"
 
 
@@ -195,3 +198,24 @@ def content_prepare_translation(*, translation_id: int) -> str:
     content = get_content(file_name=result.article.content_path)
 
     return get_translation(request=ContentTranslationRequest(content, result.language))
+
+
+def handle_translation_request(
+    translation_request: TranslationRequest,
+) -> None:
+    # todo: make this kwarg arguments only
+    if not language_repository.find_by_id(translation_request.language_id):
+        raise ValidationError(LANGUAGE_NOT_FOUND_ERROR_MSG)
+    if translation_repository.find_by_language_and_article(
+        translation_request.language_id,
+        translation_request.id_,
+    ):
+        raise ValidationError(TRANSLATION_ALREADY_EXISTS_ERROR_MSG)
+
+    article = article_repository.find_by_id(translation_request.id_)
+    if not article:
+        article = article_repository.save_or_update(
+            translation_request.to_article_entity()
+        )
+
+    translation_repository.save_or_update(translation_request.to_translation_entity())
