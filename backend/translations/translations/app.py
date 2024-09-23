@@ -13,10 +13,10 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 
-def create_app() -> Flask:
+def create_app(config: object = production) -> Flask:
     app = Flask(__name__)
 
-    app.config.from_object(production)
+    app.config.from_object(config)
 
     executor = Executor(app)
     register_start_pooling(app, executor)

@@ -55,7 +55,7 @@ services:
     build:
       context: ./backend/translations
       dockerfile: Dockerfile
-    command: gunicorn --bind 0.0.0.0:8200 --workers 4 'translations.app:create_app()' --reload
+    command: gunicorn --bind 0.0.0.0:8200 --workers 4 'wsgi:app' --reload
     volumes:
       - ./backend/translations/:/translations-service
     ports:
