@@ -1,5 +1,5 @@
 from translations.exception_handler import error_handler_register
-from translations.api.background_tasks import register_start_pooling
+from translations.api.background_tasks import register_background_tasks
 from translations.config.environments import production
 from translations.db.configuration import sa
 from translations.api.translations import translations_bp
@@ -19,7 +19,7 @@ def create_app(config: object = production) -> Flask:
     app.config.from_object(config)
 
     executor = Executor(app)
-    register_start_pooling(app, executor)
+    register_background_tasks(app, executor)
 
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 

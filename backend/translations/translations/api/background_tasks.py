@@ -5,7 +5,7 @@ from flask import Flask, Response, make_response
 from flask_executor import Executor
 
 
-def register_start_pooling(app: Flask, executor: Executor) -> None:
+def register_background_tasks(app: Flask, executor: Executor) -> None:
 
     @app.route("/start")
     def start_pooling() -> Response:
