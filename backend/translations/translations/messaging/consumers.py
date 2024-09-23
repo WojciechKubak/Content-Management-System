@@ -1,4 +1,4 @@
-from translations.config.config import BROKER_URI, GROUP_ID
+from translations.config.settings.messaging import BROKER_URI, GROUP_ID
 from translations.db.entities import Article, Translation
 from confluent_kafka import Consumer
 from typing import Callable, Type

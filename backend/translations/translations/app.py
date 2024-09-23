@@ -1,8 +1,8 @@
 from translations.api.exception_handler import error_handler_register
 from translations.api.background_tasks import register_start_pooling
+from translations.config.environments import production
 from translations.db.configuration import sa
 from translations.api.translations import translations_bp
-from translations.config.config import Config
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, Response, make_response
 from flask_migrate import Migrate
@@ -13,9 +13,10 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 
-def create_app(config: Config) -> Flask:
+def create_app() -> Flask:
     app = Flask(__name__)
-    app.config.from_object(config)
+
+    app.config.from_object(production)
 
     executor = Executor(app)
     register_start_pooling(app, executor)
@@ -29,10 +30,12 @@ def create_app(config: Config) -> Flask:
     sa.init_app(app)
     _ = Migrate(app, sa)
 
+    from translations.config.environments.production import DEBUG
+
     with app.app_context():
 
         @app.route("/health")
         def health() -> Response:
-            return make_response({"message": "OK"}, 200)
+            return make_response({"message": DEBUG}, 200)
 
         return app

@@ -1,10 +1,10 @@
-from translations.config.config import TRANSLATED_ARTICLES_TOPIC
+from translations.config.settings.messaging import TRANSLATED_ARTICLES_TOPIC
 from translations.db.repositories import (
     language_repository,
     translation_repository,
     article_repository,
 )
-from translations.config.config import STORAGE_TYPE_STRATEGY
+from translations.config.settings.storages import STORAGE_TYPE_STRATEGY
 from translations.enums.enums import StorageType
 from translations.integrations.aws.client import text_to_file_upload, file_get_content
 from translations.common.services import (
@@ -12,7 +12,7 @@ from translations.common.services import (
     file_get_local_content,
     file_name_generate,
 )
-from translations.config.config import TRANSLATION_TYPE_STRATEGY
+from translations.config.settings.translations import TRANSLATION_TYPE_STRATEGY
 from translations.enums.enums import TranslationType
 from translations.common.services import content_get_local_translation
 from translations.integrations.gpt.client import (

@@ -1,4 +1,4 @@
-from translations.config.config import BROKER_URI
+from translations.config.settings.messaging import BROKER_URI
 from translations.db.entities import Translation
 from confluent_kafka import Producer
 from dataclasses import dataclass

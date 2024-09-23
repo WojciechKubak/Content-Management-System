@@ -1,6 +1,5 @@
-from translations.app import create_app
 from translations.db.configuration import sa
-from translations.config.config import TestingConfig
+from translations.config.environments import test
 from translations.db.repositories import TranslationRepository
 from flask import Flask
 from typing import Generator
@@ -10,7 +9,12 @@ import pytest
 
 @pytest.fixture
 def app() -> Generator:
-    yield create_app(TestingConfig)
+    app = Flask(__name__)
+    app.config.from_object(test)
+
+    sa.init_app(app)
+
+    yield app
 
 
 @pytest.fixture

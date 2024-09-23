@@ -1,4 +1,4 @@
-from translations.config.config import TRANSLATION_REQUESTS_TOPIC
+from translations.config.settings.messaging import TRANSLATION_REQUESTS_TOPIC
 from translations.services.translations import handle_translation_request
 from translations.messaging.consumers import TranslationRequest, consumer_loop_start
 from flask import Flask, Response, make_response

@@ -1,4 +1,4 @@
-from translations.config.config import MEDIA_ROOT
+from translations.config.settings.storages import MEDIA_ROOT
 import uuid
 import os
 
