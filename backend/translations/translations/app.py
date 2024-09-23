@@ -1,4 +1,4 @@
-from translations.api.exception_handler import error_handler_register
+from translations.exception_handler import error_handler_register
 from translations.api.background_tasks import register_start_pooling
 from translations.config.environments import production
 from translations.db.configuration import sa
