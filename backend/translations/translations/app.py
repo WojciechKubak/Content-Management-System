@@ -30,12 +30,10 @@ def create_app() -> Flask:
     sa.init_app(app)
     _ = Migrate(app, sa)
 
-    from translations.config.environments.production import DEBUG
-
     with app.app_context():
 
         @app.route("/health")
         def health() -> Response:
-            return make_response({"message": DEBUG}, 200)
+            return make_response({"message": "OK"}, 200)
 
         return app
