@@ -3,6 +3,17 @@
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true,
         "editor.insertSpaces": true,
-        "editor.tabSize": 4,
+        "editor.tabSize": 4
     },
- }
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/*.pyo": true,
+        "**/.pytest_cache": true
+    }
+}
