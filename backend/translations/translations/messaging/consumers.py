@@ -1,5 +1,6 @@
 from translations.config.settings.messaging import BROKER_URI, GROUP_ID
 from translations.db.entities import Article, Translation
+from translations.core.exceptions import ValidationError
 from confluent_kafka import Consumer
 from typing import Callable, Type
 from dataclasses import dataclass
@@ -63,7 +64,6 @@ def consumer_loop_start(
             continue
 
         if msg.error():
-            logging.info(f"Consumer error: {msg.error()}")
             continue
 
         data = json.loads(msg.value().decode("utf-8"))
@@ -72,7 +72,7 @@ def consumer_loop_start(
         try:
             handler(translation_request.from_dto(data))
             logging.info("Successfully handled")
-        except Exception as e:
+        except ValidationError as e:
             logging.error(f"Error occured: {e}")
             continue
 
