@@ -1,6 +1,6 @@
-from translations.exception_handler import error_handler_register
+from translations.api.exception_handler import error_handler_register
 from translations.api.background_tasks import register_background_tasks
-from translations.config.environments import production
+from translations.config.environments import base
 from translations.db.configuration import sa
 from translations.api.translations import translations_bp
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -13,7 +13,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 
-def create_app(config: object = production) -> Flask:
+def create_app(config: object = base) -> Flask:
     app = Flask(__name__)
 
     app.config.from_object(config)
