@@ -201,6 +201,7 @@ def content_prepare_translation(*, translation_id: int) -> str:
 
 
 def handle_translation_request(
+    *,
     translation_request: TranslationRequest,
 ) -> None:
     # todo: make this kwarg arguments only
