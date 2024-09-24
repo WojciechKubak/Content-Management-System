@@ -47,7 +47,7 @@ def openai_get_client() -> OpenAI:
     return OpenAI(api_key=credentials.api_key)
 
 
-def content_get_translation(*, request: type[BaseTranslationRequest]) -> str:
+def content_get_translation(*, request: BaseTranslationRequest) -> str:
     client = openai_get_client()
 
     try:

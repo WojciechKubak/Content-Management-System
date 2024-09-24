@@ -52,7 +52,7 @@ def file_upload(*, file_name: str, content: str) -> str:
         return text_to_file_upload(file_name=file_name, content=content)
 
 
-def get_translation(*, request: type[BaseTranslationRequest]) -> str:
+def get_translation(*, request: BaseTranslationRequest) -> str:
     if TRANSLATION_TYPE_STRATEGY == TranslationType.LOCAL:
         return content_get_local_translation(request.content, request.language)
     else:
