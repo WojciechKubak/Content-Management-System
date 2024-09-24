@@ -34,7 +34,7 @@ def test_content_prepare_translation_raises_validation_error_on_not_pending_stat
     mock_translation_repository.find_by_id.assert_called_once_with(1)
 
 
-def test_content_prepare_translation_on_success_calls_translation_prepare_and_returns_translated_content(
+def test_content_prepare_translation_on_success_calls_translation_prepare_and_returns_content(
     mock_translation_repository, mock_get_content, mock_get_translation
 ) -> None:
     mock_translation = MagicMock(spec=Translation)
