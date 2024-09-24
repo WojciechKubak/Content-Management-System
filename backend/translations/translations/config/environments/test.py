@@ -12,3 +12,7 @@ SQLALCHEMY_ENGINE_OPTIONS = {"poolclass": NullPool}
 
 STORAGE_TYPE_STRATEGY: TranslationType = TranslationType.LOCAL
 TRANSLATION_TYPE_STRATEGY: StorageType = StorageType.LOCAL
+
+SERVER_NAME: str = "localhost.localdomain"
+APPLICATION_ROOT: str = "/"
+PREFERRED_URL_SCHEME: str = "http"
