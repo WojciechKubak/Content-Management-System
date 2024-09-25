@@ -15,5 +15,5 @@ def test_translation_get_all_returns_list_of_translation_dtos(
     result = translations_get_all()
     expected = [ListTranslationDTO.from_entity(mock) for mock in mock_translations]
 
-    mock_translation_repository.find_all.assert_called_once_with()
+    mock_translation_repository.find_all.assert_called_once_with(limit=10, offset=0)
     assert expected == result

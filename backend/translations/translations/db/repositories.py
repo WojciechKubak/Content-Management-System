@@ -46,8 +46,8 @@ class CrudRepositoryORM[T: sa.Model](CrudRepository[T]):
     def find_by_id(self, id_: int) -> T | None:
         return self.sa.session.query(self.entity).filter_by(id=id_).first()
 
-    def find_all(self) -> list[T]:
-        return self.sa.session.query(self.entity).all()
+    def find_all(self, limit: int, offset: int) -> list[T]:
+        return self.sa.session.query(self.entity).offset(offset).limit(limit).all()
 
 
 @dataclass

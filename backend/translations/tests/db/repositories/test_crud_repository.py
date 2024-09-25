@@ -36,7 +36,7 @@ class TestCrudRepository:
 
     def test_find_all(self) -> None:
         models = SimpleModelFactory.create_batch(5)
-        result = self.simple_repository.find_all()
+        result = self.simple_repository.find_all(limit=10, offset=0)
         assert models == result
 
     def test_delete_by_id(self) -> None:

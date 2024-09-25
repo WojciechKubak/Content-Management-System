@@ -16,7 +16,10 @@ translations_bp = Blueprint("translations", __name__, url_prefix="/translations"
 
 @translations_bp.get("/")
 def translation_list() -> Response:
-    translations = translations_get_all()
+    limit = request.args.get("limit", 10, type=int)
+    offset = request.args.get("offset", 0, type=int)
+
+    translations = translations_get_all(limit=limit, offset=offset)
     return make_response(
         {"translations": [translation.to_dict() for translation in translations]}, 200
     )

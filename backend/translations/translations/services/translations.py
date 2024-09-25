@@ -83,8 +83,8 @@ def translations_find_by_language(*, language_id: int) -> list[ListTranslationDT
     return [ListTranslationDTO.from_entity(translation) for translation in result]
 
 
-def translations_get_all() -> list[ListTranslationDTO]:
-    result = translation_repository.find_all()
+def translations_get_all(limit: int = 10, offset: int = 0) -> list[ListTranslationDTO]:
+    result = translation_repository.find_all(limit=limit, offset=offset)
     return [ListTranslationDTO.from_entity(translation) for translation in result]
 
 
