@@ -3,9 +3,11 @@ from typing import Any
 import os
 
 
-def assert_settings(required: list[str], error_prefix: str | None = None):
+def assert_settings(
+    required: list[str], error_prefix: str | None = None
+) -> dict[str, str]:
     present: list[str] = []
-    missing: dict[str, Any] = []
+    missing: dict[str, str] = []
 
     for setting in required:
         if param := os.getenv(setting):
