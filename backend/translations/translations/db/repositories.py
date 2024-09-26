@@ -3,6 +3,7 @@ from translations.db.configuration import sa
 from flask_sqlalchemy import SQLAlchemy
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
+from typing import Any, override
 
 
 @dataclass
@@ -46,30 +47,23 @@ class CrudRepositoryORM[T: sa.Model](CrudRepository[T]):
     def find_by_id(self, id_: int) -> T | None:
         return self.sa.session.query(self.entity).filter_by(id=id_).first()
 
-    def find_all(self, limit: int, offset: int) -> list[T]:
-        return self.sa.session.query(self.entity).offset(offset).limit(limit).all()
+    def find_all(self) -> list[T]:
+        return self.sa.session.query(self.entity).all()
 
 
 @dataclass
 class TranslationRepository(CrudRepositoryORM[Translation]):
 
-    def find_by_language(self, language_id: int) -> list[Translation]:
+    @override
+    def find_all(
+        self, limit: int, offset: int, filters: dict[str, Any]
+    ) -> list[Translation]:
         return (
-            self.sa.session.query(Translation).filter_by(language_id=language_id).all()
-        )
-
-    def find_by_language_and_article(
-        self, language_id: int, article_id: int
-    ) -> Translation:
-        return (
-            self.sa.session.query(Translation)
-            .filter_by(language_id=language_id)
-            .filter_by(article_id=article_id)
-            .first()
-        )
-
-    def find_by_status(self, status_type: Translation.StatusType) -> list[Translation]:
-        return self.sa.session.query(Translation).filter_by(status=status_type).all()
+            self.sa.session.query(self.entity)
+            .filter_by(**filters)
+            .offset(offset)
+            .limit(limit)
+        ).all()
 
 
 @dataclass

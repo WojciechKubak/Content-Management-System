@@ -20,5 +20,4 @@ class SimpleModel(BaseModel):
     __tablename__ = "simple_models"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-
     name: Mapped[str] = mapped_column(String(255), nullable=True)

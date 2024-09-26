@@ -1,6 +1,6 @@
+from translations.api.dtos import TranslationFilters
 from translations.services.translations import (
     translation_find_by_id,
-    translations_find_by_language,
     translations_get_all,
     translation_content_change,
     translation_title_change,
@@ -16,10 +16,11 @@ translations_bp = Blueprint("translations", __name__, url_prefix="/translations"
 
 @translations_bp.get("/")
 def translation_list() -> Response:
-    limit = request.args.get("limit", 10, type=int)
-    offset = request.args.get("offset", 0, type=int)
-
-    translations = translations_get_all(limit=limit, offset=offset)
+    translations = translations_get_all(
+        limit=request.args.get("limit", type=int, default=10),
+        offset=request.args.get("offset", type=int, default=0),
+        filters=TranslationFilters.from_query_params(request.args),
+    )
     return make_response(
         {"translations": [translation.to_dict() for translation in translations]}, 200
     )
@@ -29,15 +30,6 @@ def translation_list() -> Response:
 def translation_detail_api_by_id(translation_id: int) -> Response:
     translation = translation_find_by_id(translation_id=translation_id)
     return make_response(translation.to_dict(), 200)
-
-
-@translations_bp.get("/language/<int:language_id>")
-def translation_detail_api_by_language(language_id: int) -> Response:
-    translations = translations_find_by_language(language_id=language_id)
-    return make_response(
-        {"translations": [translation.to_dict() for translation in translations]},
-        200,
-    )
 
 
 @translations_bp.put("/<int:translation_id>/content")

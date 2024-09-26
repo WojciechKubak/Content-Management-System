@@ -27,6 +27,7 @@ from translations.services.dtos import (
     TranslationDTO,
     ListTranslationDTO,
 )
+from translations.api.dtos import TranslationFilters
 from translations.db.entities import Translation
 from translations.core.exceptions import ValidationError
 
@@ -74,17 +75,10 @@ def translation_find_by_id(*, translation_id: int) -> TranslationDTO:
     return TranslationDTO.from_entity(translation).with_contents(original, translated)
 
 
-def translations_find_by_language(*, language_id: int) -> list[ListTranslationDTO]:
-    if not language_repository.find_by_id(language_id):
-        raise ValidationError(LANGUAGE_NOT_FOUND_ERROR_MSG)
-
-    result = translation_repository.find_by_language(language_id)
-
-    return [ListTranslationDTO.from_entity(translation) for translation in result]
-
-
-def translations_get_all(limit: int = 10, offset: int = 0) -> list[ListTranslationDTO]:
-    result = translation_repository.find_all(limit=limit, offset=offset)
+def translations_get_all(
+    *, limit: int, offset: int, filters: TranslationFilters
+) -> list[ListTranslationDTO]:
+    result = translation_repository.find_all(limit, offset, filters.to_dict())
     return [ListTranslationDTO.from_entity(translation) for translation in result]
 
 
@@ -204,7 +198,6 @@ def handle_translation_request(
     *,
     translation_request: TranslationRequest,
 ) -> None:
-    # todo: make this kwarg arguments only
     if not language_repository.find_by_id(translation_request.language_id):
         raise ValidationError(LANGUAGE_NOT_FOUND_ERROR_MSG)
     if translation_repository.find_by_language_and_article(
