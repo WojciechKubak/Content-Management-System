@@ -33,9 +33,9 @@ services:
     ports:
       - "8100:8100"
     depends_on:
-      db:
+      db_articles_translations:
         condition: service_healthy
-      db_test:
+      db_articles_translations_test:
         condition: service_healthy
     networks:
       - cms
@@ -55,15 +55,16 @@ services:
     build:
       context: ./backend/translations
       dockerfile: Dockerfile
-    command: gunicorn --bind 0.0.0.0:8200 --workers 4 'main:app' --reload
+    command: gunicorn --certfile=/translations-service/ssl/local.crt --keyfile=/translations-service/ssl/local.key --bind 0.0.0.0:8200 --workers 4 'wsgi:app' --reload
     volumes:
       - ./backend/translations/:/translations-service
+      - ./backend/translations/ssl:/translations-service/ssl
     ports:
       - "8200:8200"
     depends_on:
-      db:
+      db_articles_translations:
         condition: service_healthy
-      db_test:
+      db_articles_translations_test:
         condition: service_healthy
     networks:
       - cms
@@ -72,8 +73,10 @@ services:
     image: nginx:latest
     volumes:
       - ./backend/translations/default.conf:/etc/nginx/conf.d/default.conf
+      - ./backend/translations/ssl:/etc/nginx/ssl
     ports:
       - "82:82"
+      - "443:443"
     depends_on:
       - translations
     networks:
@@ -89,9 +92,9 @@ services:
     ports:
       - "8300:8300"
     depends_on:
-      db:
+      db_users:
         condition: service_healthy
-      db_test:
+      db_users_test:
         condition: service_healthy
     networks:
       - cms
@@ -107,17 +110,16 @@ services:
     networks:
       - cms
 
-  db:
+  db_users:
     image: mysql:latest
     volumes:
-      - db:/var/lib/mysql
+      - db_users:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db_1
       MYSQL_USER: user
       MYSQL_PASSWORD: user1234
-      MYSQL_TCP: 3306
     ports:
       - "3306:3306"
     healthcheck:
@@ -125,19 +127,52 @@ services:
     networks:
       - cms
 
-  db_test:
+  db_articles_translations:
     image: mysql:latest
     volumes:
-      - db_test:/var/lib/mysql
+      - db_articles_translations:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_test
+      MYSQL_DATABASE: db_1
       MYSQL_USER: user
       MYSQL_PASSWORD: user1234
-      MYSQL_TCP_PORT: 3307
     ports:
-      - "3307:3307"
+      - "3307:3306"
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+    networks:
+      - cms
+
+  db_users_test:
+    image: mysql:latest
+    volumes:
+      - db_users_test:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_1
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user1234
+    ports:
+      - "3308:3306"
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+    networks:
+      - cms
+
+  db_articles_translations_test:
+    image: mysql:latest
+    volumes:
+      - db_articles_translations_test:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_1
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user1234
+    ports:
+      - "3309:3306"
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
     networks:
@@ -152,11 +187,68 @@ services:
     networks:
       - cms
 
+  zoo:
+    image: zookeeper:3.4.9
+    hostname: zoo
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=zoo:2888:3888
+    volumes:
+      - ./backup/zoo/data:/data
+      - ./backup/zoo/datalog:/datalog
+    networks:
+      - cms
+
+  kafka1:
+    image: confluentinc/cp-kafka:5.3.0
+    hostname: kafka1
+    ports:
+      - "9091:9091"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:19091,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zoo:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - ./backup/kafka1/data:/var/lib/kafka/data
+    depends_on:
+      - zoo
+    networks:
+      - cms
+
+  manager:
+    image: sheepkiller/kafka-manager
+    ports:
+      - "9000:9000"
+    environment:
+      - ZK_HOSTS=zoo:2181
+    depends_on:
+      - zoo
+    networks:
+      - cms
+
+  kafka-init:
+    image: confluentinc/cp-kafka:5.3.0
+    volumes:
+      - ./backend/translations/scripts/kafka-topics.sh:/usr/bin/kafka-topics.sh
+    entrypoint: ["/bin/bash", "/usr/bin/kafka-topics.sh"]
+    depends_on:
+      - kafka1
+    networks:
+      - cms
 
 networks:
   cms:
 
 volumes:
-  db:
-  db_test:
+  db_users:
+  db_users_test:
+  db_articles_translations:
+  db_articles_translations_test:
   nginx:

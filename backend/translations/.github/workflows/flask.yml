@@ -1,0 +1,50 @@
+name: Flask app CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      workflow_db:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: user  
+          MYSQL_PASSWORD: password
+          MYSQL_TCP_PORT: 3306
+        ports:
+          - "3306:3306"
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.12"
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pipenv && pipenv install --system --dev
+    
+    - name: Run formatter
+      run: |
+        black --check .
+    
+    - name: Run linter
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --max-complexity=10 --statistics
+    
+    - name: Run tests
+      run: |
+        pytest

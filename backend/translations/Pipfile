@@ -16,6 +16,7 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask-executor = "*"
 boto3 = "*"
+pre-commit = "*"
 
 [dev-packages]
 moto = {version = "*", extras = ["all", "ec2", "s3"]}
@@ -23,6 +24,8 @@ pytest = "*"
 coverage = "*"
 factory-boy = "*"
 flake8 = "*"
+black = "*"
+flake8-bugbear = "*"
 
 [requires]
 python_version = "3.12"
