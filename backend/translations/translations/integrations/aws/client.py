@@ -16,36 +16,36 @@ class S3Credentials:
 
 @dataclass
 class ResponseMetadata:
-    RequestId: str
-    HostId: str
-    HTTPStatusCode: int
-    HTTPHeaders: dict[str, str]
-    RetryAttempts: int
+    request_id: str
+    host_id: str
+    http_status_code: int
+    http_headers: dict[str, str]
+    retry_attempts: int
 
     @classmethod
     def from_response(cls, response: dict[str, Any]) -> Self:
         return cls(
-            RequestId=response["RequestId"],
-            HostId=response["HostId"],
-            HTTPStatusCode=response["HTTPStatusCode"],
-            HTTPHeaders=response["HTTPHeaders"],
-            RetryAttempts=response["RetryAttempts"],
+            request_id=response["RequestId"],
+            host_id=response["HostId"],
+            http_status_code=response["HTTPStatusCode"],
+            http_headers=response["HTTPHeaders"],
+            retry_attempts=response["RetryAttempts"],
         )
 
 
 @dataclass
 class PutObjectResponse:
-    ResponseMetadata: ResponseMetadata
-    ETag: str
-    ServerSideEncryption: str
+    response_metadata: ResponseMetadata
+    etag: str
+    server_side_encryption: str
 
     @classmethod
     def from_response(cls, response: dict[str, Any]) -> Self:
         response_metadata = ResponseMetadata.from_response(response["ResponseMetadata"])
         return cls(
-            ResponseMetadata=response_metadata,
-            ETag=response["ETag"],
-            ServerSideEncryption=response.get("ServerSideEncryption", ""),
+            response_metadata=response_metadata,
+            etag=response["ETag"],
+            server_side_encryption=response.get("ServerSideEncryption", ""),
         )
 
 
